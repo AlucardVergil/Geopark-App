@@ -16,6 +16,8 @@ public class BeaconManager : MonoBehaviour
     private string fileId = "1qTmB5Z3HHHe_ue2LRL66YgwntuK-s-w6";
     private string localFilePath;
 
+    public TMP_Text temp;
+
     void Start()
     {
         landmarkDetails.SetActive(false);
@@ -89,6 +91,8 @@ public class BeaconManager : MonoBehaviour
         foreach (var beacon in beaconDetailsList.Beacons)
         {
             string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
+
+            temp.text = Application.persistentDataPath.ToString();
 
             // Only download the image if it doesn't already exist locally
             if (!File.Exists(imagePath))

@@ -37,4 +37,10 @@ public class SidePanelController : MonoBehaviour
         sidePanel.anchoredPosition = targetPosition;
         isPanelVisible = !isPanelVisible;
     }
+
+
+    public void QuitApplication()
+    {
+        Application.Quit();
+    }
 }
