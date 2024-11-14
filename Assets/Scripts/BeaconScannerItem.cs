@@ -15,13 +15,17 @@ public class BeaconScannerItem : MonoBehaviour
 
 	[HideInInspector] public string UUID;
 
+
+    private BeaconManager _beaconManager;
     private GameObject landmarkDetails;
     private GameObject mainMenu;
 
 
     private void Start()
     {
-        landmarkDetails = GameObject.Find("LandmarkDetails");
+        _beaconManager = GameObject.Find("BLEManager").GetComponent<BeaconManager>();
+
+        landmarkDetails = _beaconManager.landmarkDetails;
 
         mainMenu = GameObject.Find("MainMenu");
 
@@ -36,8 +40,9 @@ public class BeaconScannerItem : MonoBehaviour
 
         GetComponent<Button>().onClick.AddListener(() =>
         {
+            GameObject.Find("Text (TMP) (1)").GetComponent<TMP_Text>().text = "click";
             // Get Beacon Details
-            BeaconDetails details = GameObject.Find("BLEManager").GetComponent<BeaconManager>().GetBeaconDetails(UUID);
+            BeaconDetails details = _beaconManager.GetBeaconDetails(UUID);
 
             // Check if details are found
             if (details != null)

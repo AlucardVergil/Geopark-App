@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
 
 public class BeaconManager : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class BeaconManager : MonoBehaviour
     // Replace with your actual Google Drive file ID
     private string fileId = "1qTmB5Z3HHHe_ue2LRL66YgwntuK-s-w6";
     private string localFilePath;
-
+    public TMP_Text temp;
 
     void Start()
     {
@@ -87,22 +88,43 @@ public class BeaconManager : MonoBehaviour
 
 
 
+    //// Display the details of a specific beacon by UUID
+    //public BeaconDetails GetBeaconDetails(string uuid)
+    //{
+    //    if (beaconDetailsDictionary.TryGetValue(uuid, out BeaconDetails details))
+    //    {
+    //        // Display details (replace this with actual UI code)
+    //        Debug.Log("Info: " + details.Info);
+    //        Debug.Log("Additional Info: " + details.AdditionalInfo);
+    //        // Load and display image from details.ImagePath if needed
+    //        temp.text = "test " + uuid;
+    //        return details;
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning("Beacon with UUID " + uuid + " not found.");
+    //        temp.text = "fail";
+    //        return null;
+    //    }
+    //}
+
+
     // Display the details of a specific beacon by UUID
     public BeaconDetails GetBeaconDetails(string uuid)
     {
-        if (beaconDetailsDictionary.TryGetValue(uuid, out BeaconDetails details))
+        BeaconDetails details = new BeaconDetails();
+
+        foreach (var beacon in beaconDetailsList.Beacons)
         {
-            // Display details (replace this with actual UI code)
-            Debug.Log("Info: " + details.Info);
-            Debug.Log("Additional Info: " + details.AdditionalInfo);
-            // Load and display image from details.ImagePath if needed
-            return details;
+            temp.text = "test " + beacon.UUID + "\n" + uuid;
+            if (beacon.UUID == uuid)
+            {
+                details = beacon;
+                
+            }
         }
-        else
-        {
-            Debug.LogWarning("Beacon with UUID " + uuid + " not found.");
-            return null;
-        }
+
+        return details; // Converts the List<string> to a string array
     }
 
 
