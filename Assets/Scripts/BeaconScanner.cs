@@ -84,10 +84,7 @@ public class BeaconScanner : MonoBehaviour
 	{
         iBeaconUUIDs = _beaconManager.GetAllUUIDs();
 
-        //temp.text = iBeaconUUIDs[0];
-
 		if (iBeaconUUIDs.Length == 1) return;
-		//Debug.Log(iBeaconUUIDs.Length);
 
 
         if (_timeout > 0f)
@@ -165,21 +162,17 @@ public class BeaconScanner : MonoBehaviour
 
 						if (_iBeaconItems.ContainsKey(UUID))
 						{
-                            temp3.text = "test ";
                             var iBeaconItem = _iBeaconItems[UUID];
 
                             iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
 
                             iBeaconItem.TextRSSIValue.text = iBeaconData.RSSI.ToString();
-                            temp3.text += "test 2";
 
                             // Android returns the signal power or measured power, iOS hides this and there is no way to get it
                             iBeaconItem.TextAndroidSignalPower.text = iBeaconData.AndroidSignalPower.ToString();
-                            temp3.text += "test 3";
 
                             // iOS returns an enum of unknown, far, near, immediate, Android does not return this
                             iBeaconItem.TextiOSProximity.text = iBeaconData.iOSProximity.ToString();
-                            temp3.text += "test 4";
 
                             // we can only calculate a distance if we have the signal power which iOS does not provide
                             if (iBeaconData.AndroidSignalPower != 0)
