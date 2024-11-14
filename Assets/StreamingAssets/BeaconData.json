@@ -1,0 +1,18 @@
+{
+  "Beacons": [
+    {
+      "UUID": "e2c56db5-dffb-48d2-b060-d0f5a71096e0",
+      "Title": "Landmark 1",
+      "Info": "This is beacon 1",
+      "ImagePath": "Images/Beacon1Image",
+      "AdditionalInfo": "Additional information about beacon 1"
+    },
+    {
+      "UUID": "987e6543-e21b-45d3-a789-123456789012",
+      "Title": "Landmark 2",
+      "Info": "This is beacon 2",
+      "ImagePath": "Images/Beacon2Image",
+      "AdditionalInfo": "Additional information about beacon 2"
+    }
+  ]
+}
