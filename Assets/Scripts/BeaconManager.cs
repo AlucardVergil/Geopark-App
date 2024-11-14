@@ -10,13 +10,11 @@ public class BeaconManager : MonoBehaviour
     [HideInInspector] public BeaconDetailsList beaconDetailsList; // Stores the list of beacon details
     private Dictionary<string, BeaconDetails> beaconDetailsDictionary; // Dictionary for quick lookup
 
-    public GameObject landmarkDetails;
-
+    public GameObject landmarkDetails;    
 
     // Replace with your actual Google Drive file ID
     private string fileId = "1qTmB5Z3HHHe_ue2LRL66YgwntuK-s-w6";
     private string localFilePath;
-    public TMP_Text temp;
 
     void Start()
     {
@@ -28,8 +26,6 @@ public class BeaconManager : MonoBehaviour
         // Try to download the JSON file; if it fails, load the local copy
         StartCoroutine(TryDownloadOrLoadLocalJSON());
     }
-
-
 
     private IEnumerator TryDownloadOrLoadLocalJSON()
     {
@@ -49,6 +45,9 @@ public class BeaconManager : MonoBehaviour
 
             // Load data from the downloaded JSON
             LoadBeaconData(json);
+
+            // Start downloading images
+            StartCoroutine(DownloadImages());
         }
         else
         {
@@ -59,6 +58,9 @@ public class BeaconManager : MonoBehaviour
             {
                 string json = File.ReadAllText(localFilePath);
                 LoadBeaconData(json);
+
+                // Start downloading images (if JSON file was loaded locally)
+                StartCoroutine(DownloadImages());
             }
             else
             {
@@ -66,8 +68,6 @@ public class BeaconManager : MonoBehaviour
             }
         }
     }
-
-
 
     private void LoadBeaconData(string json)
     {
@@ -84,30 +84,34 @@ public class BeaconManager : MonoBehaviour
         Debug.Log("Beacon data loaded successfully.");
     }
 
+    private IEnumerator DownloadImages()
+    {
+        foreach (var beacon in beaconDetailsList.Beacons)
+        {
+            string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
 
+            // Only download the image if it doesn't already exist locally
+            if (!File.Exists(imagePath))
+            {
+                using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(beacon.ImageURL))
+                {
+                    yield return request.SendWebRequest();
 
-
-
-    //// Display the details of a specific beacon by UUID
-    //public BeaconDetails GetBeaconDetails(string uuid)
-    //{
-    //    if (beaconDetailsDictionary.TryGetValue(uuid, out BeaconDetails details))
-    //    {
-    //        // Display details (replace this with actual UI code)
-    //        Debug.Log("Info: " + details.Info);
-    //        Debug.Log("Additional Info: " + details.AdditionalInfo);
-    //        // Load and display image from details.ImagePath if needed
-    //        temp.text = "test " + uuid;
-    //        return details;
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning("Beacon with UUID " + uuid + " not found.");
-    //        temp.text = "fail";
-    //        return null;
-    //    }
-    //}
-
+                    if (request.result == UnityWebRequest.Result.Success)
+                    {
+                        Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                        byte[] imageData = texture.EncodeToPNG();
+                        File.WriteAllBytes(imagePath, imageData);
+                        Debug.Log($"Downloaded and saved image for UUID {beacon.UUID}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Failed to download image for UUID {beacon.UUID}");
+                    }
+                }
+            }
+        }
+    }
 
     // Display the details of a specific beacon by UUID
     public BeaconDetails GetBeaconDetails(string uuid)
@@ -116,15 +120,40 @@ public class BeaconManager : MonoBehaviour
 
         foreach (var beacon in beaconDetailsList.Beacons)
         {
-            temp.text = "test " + beacon.UUID + "\n" + uuid;
             if (beacon.UUID == uuid)
             {
                 details = beacon;
-                
+
+                // Load image if it exists locally
+                string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
+                if (File.Exists(imagePath))
+                {
+                    byte[] imageData = File.ReadAllBytes(imagePath);
+                    Texture2D texture = new Texture2D(2, 2);
+                    texture.LoadImage(imageData);
+
+
+                    // Display the texture in UI or any other part where you want to use it
+                    // For example, set it as sprite for an Image component
+                    // imageComponent.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+
+                    // Create a Sprite from the texture
+                    details.ImageSprite = Sprite.Create(
+                        texture,
+                        new Rect(0, 0, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f)
+                    );
+                }
+                else
+                {
+                    Debug.LogWarning($"Image for UUID {uuid} not found locally.");
+                }
+
+                break;
             }
         }
 
-        return details; // Converts the List<string> to a string array
+        return details;
     }
 
 

@@ -21,10 +21,6 @@ public class BeaconScanner : MonoBehaviour
 
 	private BeaconManager _beaconManager;
 
-    public TMP_Text temp;
-    public TMP_Text temp2;
-    public TMP_Text temp3;
-
 
 
     // Use this for initialization
@@ -129,6 +125,9 @@ public class BeaconScanner : MonoBehaviour
 
 						// iOS returns an enum of unknown, far, near, immediate, Android does not return this
 						iBeaconItem.TextiOSProximity.text = "iOSProximity";
+
+
+                        iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails("e2c56db5-dffb-48d2-b060-d0f5a71096e0").ImageSprite;
                     }
 #endif
 
@@ -177,7 +176,10 @@ public class BeaconScanner : MonoBehaviour
                             // we can only calculate a distance if we have the signal power which iOS does not provide
                             if (iBeaconData.AndroidSignalPower != 0)
 								iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
-						}
+
+
+                            iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;
+                        }
 					});
 				}
 				else

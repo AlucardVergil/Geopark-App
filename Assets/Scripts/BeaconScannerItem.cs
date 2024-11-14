@@ -40,7 +40,6 @@ public class BeaconScannerItem : MonoBehaviour
 
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            GameObject.Find("Text (TMP) (1)").GetComponent<TMP_Text>().text = "click";
             // Get Beacon Details
             BeaconDetails details = _beaconManager.GetBeaconDetails(UUID);
 
@@ -55,6 +54,8 @@ public class BeaconScannerItem : MonoBehaviour
                 landmarkDetails.GetNamedChild("Title").GetComponent<TMP_Text>().text = details.Title;
 
                 landmarkDetails.GetNamedChild("ContentText").GetComponent<TMP_Text>().text = details.Info;
+
+                landmarkDetails.GetNamedChild("Image").GetComponent<Image>().sprite = details.ImageSprite;
 
                 mainMenu.SetActive(false);
 

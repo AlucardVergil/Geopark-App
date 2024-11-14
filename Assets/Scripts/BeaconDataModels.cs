@@ -9,8 +9,10 @@ public class BeaconDetails
     public string UUID;
     public string Title;
     public string Info;
-    public string ImagePath;
+    public string ImageURL;
     public string AdditionalInfo;
+
+    public Sprite ImageSprite;
 }
 
 [Serializable]
