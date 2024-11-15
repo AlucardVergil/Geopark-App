@@ -67,11 +67,15 @@ public class BeaconScannerItem : MonoBehaviour
                 
                 galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");
 
-                for (int i = 0; i < details.GallerySprites.Count; i++)
+                if (galleryScrollViewContent.transform.childCount == 0)
                 {
-                    var galleryImage = Instantiate(galleryImagePrefab, galleryScrollViewContent.transform);
-                    galleryImage.GetComponent<Image>().sprite = details.GallerySprites[i];
+                    for (int i = 0; i < details.GallerySprites.Count; i++)
+                    {
+                        var galleryImage = Instantiate(galleryImagePrefab, galleryScrollViewContent.transform);
+                        galleryImage.GetComponent<Image>().sprite = details.GallerySprites[i];
+                    }
                 }
+                               
 
                 scrollViewGallery.SetActive(false);
 
