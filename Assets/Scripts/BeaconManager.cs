@@ -3,37 +3,39 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
-using TMPro;
+using UnityEngine.UI;
 
 public class BeaconManager : MonoBehaviour
 {
     [HideInInspector] public BeaconDetailsList beaconDetailsList; // Stores the list of beacon details
     private Dictionary<string, BeaconDetails> beaconDetailsDictionary; // Dictionary for quick lookup
 
-    public GameObject landmarkDetails;    
+    public GameObject landmarkDetails;
+    public GameObject loadingScreen;
+    public Slider progressBar;
 
-    // Replace with your actual Google Drive file ID
     private string fileId = "1qTmB5Z3HHHe_ue2LRL66YgwntuK-s-w6";
     private string localFilePath;
 
-    public TMP_Text temp;
+    private int filesDownloaded; // Track downloaded files
 
     void Start()
     {
         landmarkDetails.SetActive(false);
+        loadingScreen.SetActive(true);
+        progressBar.value = 0f;
 
-        // Set up the path to save the file locally
         localFilePath = Path.Combine(Application.persistentDataPath, "BeaconData.json");
 
-        // Try to download the JSON file; if it fails, load the local copy
+        // Start downloading the JSON file; if it fails, load the local copy
         StartCoroutine(TryDownloadOrLoadLocalJSON());
     }
 
     private IEnumerator TryDownloadOrLoadLocalJSON()
     {
         string url = $"https://drive.google.com/uc?id={fileId}&export=download";
+        int totalFiles = 1; // JSON file counts as 1 file initially
 
-        // Start downloading the file
         UnityWebRequest request = UnityWebRequest.Get(url);
         yield return request.SendWebRequest();
 
@@ -41,42 +43,47 @@ public class BeaconManager : MonoBehaviour
         {
             string json = request.downloadHandler.text;
 
-            // Save downloaded JSON to local file for offline access
             File.WriteAllText(localFilePath, json);
             Debug.Log("Downloaded JSON and saved to: " + localFilePath);
 
-            // Load data from the downloaded JSON
             LoadBeaconData(json);
 
-            // Start downloading images
-            StartCoroutine(DownloadImages());
+            totalFiles += beaconDetailsList.Beacons.Count;
+
+            filesDownloaded++;
+            UpdateProgressBar(filesDownloaded, totalFiles);
+
+            yield return StartCoroutine(DownloadImages(totalFiles));
         }
         else
         {
             Debug.LogWarning("Failed to download JSON, loading local file if it exists.");
 
-            // If download failed, load from the local file if available
             if (File.Exists(localFilePath))
             {
                 string json = File.ReadAllText(localFilePath);
                 LoadBeaconData(json);
 
-                // Start downloading images (if JSON file was loaded locally)
-                StartCoroutine(DownloadImages());
+                totalFiles += beaconDetailsList.Beacons.Count;
+
+                filesDownloaded++;
+                UpdateProgressBar(filesDownloaded, totalFiles);
+
+                yield return StartCoroutine(DownloadImages(totalFiles));
             }
             else
             {
                 Debug.LogError("No local JSON file found. The app needs an internet connection to download the JSON initially.");
             }
         }
+
+        loadingScreen.SetActive(false); // Hide loading screen after all downloads are complete
     }
 
     private void LoadBeaconData(string json)
     {
-        // Deserialize JSON data
         beaconDetailsList = JsonUtility.FromJson<BeaconDetailsList>(json);
 
-        // Populate the dictionary for quick lookup
         beaconDetailsDictionary = new Dictionary<string, BeaconDetails>();
         foreach (var beacon in beaconDetailsList.Beacons)
         {
@@ -86,15 +93,12 @@ public class BeaconManager : MonoBehaviour
         Debug.Log("Beacon data loaded successfully.");
     }
 
-    private IEnumerator DownloadImages()
+    private IEnumerator DownloadImages(int totalFiles)
     {
         foreach (var beacon in beaconDetailsList.Beacons)
         {
             string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
 
-            temp.text = Application.persistentDataPath.ToString();
-
-            // Only download the image if it doesn't already exist locally
             if (!File.Exists(imagePath))
             {
                 using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(beacon.ImageURL))
@@ -114,10 +118,18 @@ public class BeaconManager : MonoBehaviour
                     }
                 }
             }
+
+            filesDownloaded++;
+            UpdateProgressBar(filesDownloaded, totalFiles);
         }
     }
 
-    // Display the details of a specific beacon by UUID
+    private void UpdateProgressBar(int completed, int total)
+    {
+        float progress = (float)completed / total;
+        progressBar.value = progress;
+    }
+
     public BeaconDetails GetBeaconDetails(string uuid)
     {
         BeaconDetails details = new BeaconDetails();
@@ -128,7 +140,6 @@ public class BeaconManager : MonoBehaviour
             {
                 details = beacon;
 
-                // Load image if it exists locally
                 string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
                 if (File.Exists(imagePath))
                 {
@@ -136,12 +147,6 @@ public class BeaconManager : MonoBehaviour
                     Texture2D texture = new Texture2D(2, 2);
                     texture.LoadImage(imageData);
 
-
-                    // Display the texture in UI or any other part where you want to use it
-                    // For example, set it as sprite for an Image component
-                    // imageComponent.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-                    // Create a Sprite from the texture
                     details.ImageSprite = Sprite.Create(
                         texture,
                         new Rect(0, 0, texture.width, texture.height),
@@ -160,9 +165,6 @@ public class BeaconManager : MonoBehaviour
         return details;
     }
 
-
-
-    // Method to get all UUIDs from the JSON file and return them as a string array
     public string[] GetAllUUIDs()
     {
         List<string> uuidsList = new List<string>();
@@ -172,6 +174,6 @@ public class BeaconManager : MonoBehaviour
             uuidsList.Add(beacon.UUID.ToUpper() + ":Pit01");
         }
 
-        return uuidsList.ToArray(); // Converts the List<string> to a string array
+        return uuidsList.ToArray();
     }
 }
