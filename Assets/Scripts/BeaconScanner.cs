@@ -21,6 +21,11 @@ public class BeaconScanner : MonoBehaviour
 
 	private BeaconManager _beaconManager;
 
+    private Dictionary<string, float> _undetectedTimers; // Track undetected timers for each beacon
+    private float undetectedDelay = 0f; // Delay in seconds before destroying undetected beacons
+
+    public TMP_Text debugText1;
+    public TMP_Text debugText2;
 
 
     // Use this for initialization
@@ -30,7 +35,9 @@ public class BeaconScanner : MonoBehaviour
 
         _iBeaconItems = new Dictionary<string, BeaconScannerItem>();
 
-		BluetoothLEHardwareInterface.Initialize(true, false, () => {
+        _undetectedTimers = new Dictionary<string, float>();
+
+        BluetoothLEHardwareInterface.Initialize(true, false, () => {
 
 			_timeout = _startScanDelay;
 
@@ -75,33 +82,44 @@ public class BeaconScanner : MonoBehaviour
 
 
 
+    private string NormalizeUUID(string uuid)
+{
+    // Remove everything after the first colon, if it exists
+    int colonIndex = uuid.IndexOf(':');
+    return colonIndex > 0 ? uuid.Substring(0, colonIndex) : uuid;
+}
+
+
+
     // Update is called once per frame
-    void Update ()
-	{
+    void Update()
+    {
         iBeaconUUIDs = _beaconManager.GetAllUUIDs();
 
-		if (iBeaconUUIDs.Length == 1) return;
-
+        if (iBeaconUUIDs.Length == 1) return;
 
         if (_timeout > 0f)
-		{
-			_timeout -= Time.deltaTime;
-			if (_timeout <= 0f)
-			{
-				if (_startScan)
-				{
-					_startScan = false;
-					_timeout = _startScanTimeout;
-
+        {
+            _timeout -= Time.deltaTime;
+            if (_timeout <= 0f)
+            {
+                if (_startScan)
+                {
+                    _startScan = false;
+                    _timeout = _startScanTimeout;
 
 #if UNITY_EDITOR
-					if (!_iBeaconItems.ContainsKey("e2c56db5-dffb-48d2-b060-d0f5a71096e0"))
+
+                    // Reset undetected timer if the beacon is detected
+                    if (_undetectedTimers.ContainsKey("e2c56db5-dffb-48d2-b060-d0f5a71096e0"))
+                        _undetectedTimers.Remove("e2c56db5-dffb-48d2-b060-d0f5a71096e0");
+
+                    if (!_iBeaconItems.ContainsKey("e2c56db5-dffb-48d2-b060-d0f5a71096e0"))
                     {
-                        
                         var newItem = Instantiate(iBeaconItemPrefab);
                         if (newItem != null)
                         {
-                            
+
                             newItem.transform.SetParent(transform);
                             newItem.transform.localScale = new Vector3(1f, 1f, 1f);
 
@@ -123,46 +141,47 @@ public class BeaconScanner : MonoBehaviour
                         // Android returns the signal power or measured power, iOS hides this and there is no way to get it
                         iBeaconItem.TextAndroidSignalPower.text = "AndroidSignalPower";
 
-						// iOS returns an enum of unknown, far, near, immediate, Android does not return this
-						iBeaconItem.TextiOSProximity.text = "iOSProximity";
+                        // iOS returns an enum of unknown, far, near, immediate, Android does not return this
+                        iBeaconItem.TextiOSProximity.text = "iOSProximity";
 
 
                         iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails("e2c56db5-dffb-48d2-b060-d0f5a71096e0").ImageSprite;
                     }
 #endif
 
+                    // scanning for iBeacon devices requires that you know the Proximity UUID and provide an Identifier
+                    BluetoothLEHardwareInterface.ScanForBeacons(iBeaconUUIDs, (iBeaconData) =>
+                    {
+                        string UUID = FormatUUID(iBeaconData.UUID.ToLower());
 
+                        // Reset undetected timer if the beacon is detected
+                        if (_undetectedTimers.ContainsKey(UUID))
+                            _undetectedTimers.Remove(UUID);
 
-					// scanning for iBeacon devices requires that you know the Proximity UUID and provide an Identifier
-					BluetoothLEHardwareInterface.ScanForBeacons(iBeaconUUIDs, (iBeaconData) => {
-
-						string UUID = FormatUUID(iBeaconData.UUID.ToLower());
-
-						if (!_iBeaconItems.ContainsKey(UUID))
-						{
-							BluetoothLEHardwareInterface.Log ("item new: " + iBeaconData.UUID);
-							var newItem = Instantiate(iBeaconItemPrefab);
-                            
+                        // Handle new beacon
+                        if (!_iBeaconItems.ContainsKey(UUID))
+                        {
+                            BluetoothLEHardwareInterface.Log("item new: " + iBeaconData.UUID);
+                            var newItem = Instantiate(iBeaconItemPrefab);
                             if (newItem != null)
-							{
+                            {
                                 BluetoothLEHardwareInterface.Log("item created: " + iBeaconData.UUID);
-								newItem.transform.SetParent(transform);
-								newItem.transform.localScale = new Vector3(1f, 1f, 1f);
+                                newItem.transform.SetParent(transform);
+                                newItem.transform.localScale = Vector3.one;
 
-								var iBeaconItem = newItem.GetComponent<BeaconScannerItem>();
-								if (iBeaconItem != null)
-								{
+                                var iBeaconItem = newItem.GetComponent<BeaconScannerItem>();
+                                if (iBeaconItem != null)
+                                {
                                     _iBeaconItems[UUID] = iBeaconItem;
-									iBeaconItem.UUID = UUID;
-
+                                    iBeaconItem.UUID = UUID;
                                 }
                             }
-						}
+                        }
 
-						if (_iBeaconItems.ContainsKey(UUID))
-						{
+                        // Update existing beacon data
+                        if (_iBeaconItems.ContainsKey(UUID))
+                        {
                             var iBeaconItem = _iBeaconItems[UUID];
-
                             if (iBeaconItem.TextTitleFromUUID.text == "")
                                 iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
 
@@ -176,20 +195,67 @@ public class BeaconScanner : MonoBehaviour
 
                             // we can only calculate a distance if we have the signal power which iOS does not provide
                             if (iBeaconData.AndroidSignalPower != 0)
-								iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
+                                iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
 
                             if (iBeaconItem.GetComponent<Image>().sprite == null)
                                 iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;
                         }
-					});
-				}
-				else
-				{
-					BluetoothLEHardwareInterface.StopScan();
-					_startScan = true;
-					_timeout = _startScanDelay;
-				}
-			}
-		}
-	}
+                    });
+
+#if UNITY_EDITOR
+                    // Handle undetected beacons with delay
+                    HandleUndetectedBeacons();
+#endif
+                }
+                else
+                {
+                    BluetoothLEHardwareInterface.StopScan();
+                    _startScan = true;
+                    _timeout = _startScanDelay;
+                }
+            }
+        }
+    }
+
+
+
+    void HandleUndetectedBeacons()
+    {
+        // Get all currently detected UUIDs
+        var detectedUUIDs = iBeaconUUIDs.Select(uuid => NormalizeUUID(uuid.ToLower())).ToList();
+
+        // Update timers for undetected beacons
+        foreach (var uuid in _iBeaconItems.Keys.ToList())
+        {
+            debugText1.text = _iBeaconItems.First().Key;
+            debugText2.text = detectedUUIDs[0];
+
+            Debug.Log(uuid);
+            Debug.Log("test " + _iBeaconItems[uuid].gameObject);
+            Debug.Log(detectedUUIDs.Contains(uuid));
+            if (!detectedUUIDs.Contains(uuid))
+            {
+                Debug.Log("if (!detectedUUIDs.Contains(uuid))");
+                if (!_undetectedTimers.ContainsKey(uuid))
+                    _undetectedTimers[uuid] = undetectedDelay;
+
+                _undetectedTimers[uuid] -= Time.deltaTime;
+
+                if (_undetectedTimers[uuid] <= 0f)
+                {
+                    Debug.Log("Destroy(_iBeaconItems[uuid].gameObject);");
+                    Destroy(_iBeaconItems[uuid].gameObject);
+                    _iBeaconItems.Remove(uuid);
+                    _undetectedTimers.Remove(uuid);
+                }
+            }
+        }
+
+        // Clean up any expired timers for removed beacons
+        foreach (var uuid in _undetectedTimers.Keys.ToList())
+        {
+            if (!_iBeaconItems.ContainsKey(uuid))
+                _undetectedTimers.Remove(uuid);
+        }
+    }
 }
