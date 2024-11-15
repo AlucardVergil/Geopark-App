@@ -345,9 +345,9 @@ RectTransform:
   m_Father: {fileID: 641495429}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &91365104
 MonoBehaviour:
@@ -3198,7 +3198,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &641495429
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3831,7 +3831,7 @@ RectTransform:
   m_Father: {fileID: 924552503}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: NaN}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5473,9 +5473,9 @@ RectTransform:
   m_Father: {fileID: 641495429}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &990010972
 MonoBehaviour:
@@ -7385,7 +7385,7 @@ GameObject:
   - component: {fileID: 1315286112}
   - component: {fileID: 1315286111}
   m_Layer: 5
-  m_Name: Image
+  m_Name: MainImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10003,9 +10003,9 @@ RectTransform:
   m_Father: {fileID: 641495429}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1823183558
 MonoBehaviour:
@@ -10225,7 +10225,7 @@ GameObject:
   - component: {fileID: 1830153708}
   - component: {fileID: 1830153707}
   m_Layer: 5
-  m_Name: Content
+  m_Name: GalleryContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10248,7 +10248,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.0000023025073, y: -0.00076293945}
-  m_SizeDelta: {x: 0, y: 20}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1830153707
 MonoBehaviour:
@@ -11496,6 +11496,8 @@ MonoBehaviour:
       ImageURL: 
       AdditionalInfo: 
       ImageSprite: {fileID: 0}
+      GalleryImages: []
+      GallerySprites: []
   landmarkDetails: {fileID: 385947235}
   loadingScreen: {fileID: 410802017}
   progressBar: {fileID: 1543000400}
@@ -11532,7 +11534,7 @@ RectTransform:
   m_Father: {fileID: 120773930}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: NaN, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}

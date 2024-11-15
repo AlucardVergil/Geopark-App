@@ -640,6 +640,8 @@ MonoBehaviour:
   TextDistance: {fileID: 5255944923611181876}
   TextiOSProximity: {fileID: 8090250857789446998}
   UUID: 
+  galleryImagePrefab: {fileID: 984741297359554799, guid: d4f10f05c24fa494d94d7e5b2421be60,
+    type: 3}
 --- !u!114 &134561346082694303
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -13,7 +13,12 @@ public class BeaconDetails
     public string AdditionalInfo;
 
     public Sprite ImageSprite;
+
+    public List<string> GalleryImages; // List of image URLs for the gallery
+    public List<Sprite> GallerySprites = new List<Sprite>(); // Sprites for gallery images
+
 }
+
 
 [Serializable]
 public class BeaconDetailsList

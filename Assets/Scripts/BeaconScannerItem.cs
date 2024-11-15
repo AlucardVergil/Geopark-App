@@ -20,6 +20,10 @@ public class BeaconScannerItem : MonoBehaviour
     private GameObject landmarkDetails;
     private GameObject mainMenu;
 
+    public GameObject galleryImagePrefab;
+    GameObject scrollViewGallery;
+    GameObject galleryScrollViewContent;
+
 
     private void Start()
     {
@@ -55,7 +59,21 @@ public class BeaconScannerItem : MonoBehaviour
 
                 landmarkDetails.GetNamedChild("ContentText").GetComponent<TMP_Text>().text = details.Info;
 
-                landmarkDetails.GetNamedChild("Image").GetComponent<Image>().sprite = details.ImageSprite;
+                landmarkDetails.GetNamedChild("MainImage").GetComponent<Image>().sprite = details.ImageSprite;
+
+                
+                
+                scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
+                
+                galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");
+
+                for (int i = 0; i < details.GallerySprites.Count; i++)
+                {
+                    var galleryImage = Instantiate(galleryImagePrefab, galleryScrollViewContent.transform);
+                    galleryImage.GetComponent<Image>().sprite = details.GallerySprites[i];
+                }
+
+                scrollViewGallery.SetActive(false);
 
                 mainMenu.SetActive(false);
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -53,7 +54,7 @@ public class BeaconManager : MonoBehaviour
             filesDownloaded++;
             UpdateProgressBar(filesDownloaded, totalFiles);
 
-            yield return StartCoroutine(DownloadImages(totalFiles));
+            yield return StartCoroutine(DownloadImages());
         }
         else
         {
@@ -69,7 +70,7 @@ public class BeaconManager : MonoBehaviour
                 filesDownloaded++;
                 UpdateProgressBar(filesDownloaded, totalFiles);
 
-                yield return StartCoroutine(DownloadImages(totalFiles));
+                yield return StartCoroutine(DownloadImages());
             }
             else
             {
@@ -93,46 +94,122 @@ public class BeaconManager : MonoBehaviour
         Debug.Log("Beacon data loaded successfully.");
     }
 
-    private IEnumerator DownloadImages(int totalFiles)
+    //private IEnumerator DownloadImages(int totalFiles)
+    //{
+    //    foreach (var beacon in beaconDetailsList.Beacons)
+    //    {
+    //        string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
+
+    //        if (!File.Exists(imagePath))
+    //        {
+    //            using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(beacon.ImageURL))
+    //            {
+    //                yield return request.SendWebRequest();
+
+    //                if (request.result == UnityWebRequest.Result.Success)
+    //                {
+    //                    Texture2D texture = DownloadHandlerTexture.GetContent(request);
+    //                    byte[] imageData = texture.EncodeToPNG();
+    //                    File.WriteAllBytes(imagePath, imageData);
+    //                    Debug.Log($"Downloaded and saved image for UUID {beacon.UUID}");
+    //                }
+    //                else
+    //                {
+    //                    Debug.LogError($"Failed to download image for UUID {beacon.UUID}");
+    //                }
+    //            }
+    //        }
+
+    //        filesDownloaded++;
+    //        UpdateProgressBar(filesDownloaded, totalFiles);
+    //    }
+    //}
+
+
+    private IEnumerator DownloadImages()
     {
+        int filesDownloaded = 0;
+        int totalFiles = beaconDetailsList.Beacons.Count + beaconDetailsList.Beacons.Sum(b => b.GalleryImages.Count);
+
         foreach (var beacon in beaconDetailsList.Beacons)
         {
-            string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
-
-            if (!File.Exists(imagePath))
+            // Download the main image
+            string mainImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_main.png");
+            if (!File.Exists(mainImagePath))
             {
-                using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(beacon.ImageURL))
+                yield return StartCoroutine(DownloadImage(beacon.ImageURL, mainImagePath, sprite =>
                 {
-                    yield return request.SendWebRequest();
-
-                    if (request.result == UnityWebRequest.Result.Success)
-                    {
-                        Texture2D texture = DownloadHandlerTexture.GetContent(request);
-                        byte[] imageData = texture.EncodeToPNG();
-                        File.WriteAllBytes(imagePath, imageData);
-                        Debug.Log($"Downloaded and saved image for UUID {beacon.UUID}");
-                    }
-                    else
-                    {
-                        Debug.LogError($"Failed to download image for UUID {beacon.UUID}");
-                    }
-                }
+                    beacon.ImageSprite = sprite;
+                    Debug.Log($"Downloaded main image for UUID {beacon.UUID}");
+                }));
+                filesDownloaded++;
+                UpdateProgressBar(filesDownloaded, totalFiles);
             }
 
-            filesDownloaded++;
-            UpdateProgressBar(filesDownloaded, totalFiles);
+            // Download gallery images
+            for (int i = 0; i < beacon.GalleryImages.Count; i++)
+            {
+                string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_gallery_{i}.png");
+                if (!File.Exists(galleryImagePath))
+                {
+                    string galleryImageUrl = beacon.GalleryImages[i];
+                    yield return StartCoroutine(DownloadImage(galleryImageUrl, galleryImagePath, sprite =>
+                    {
+                        beacon.GallerySprites.Add(sprite);
+                        Debug.Log($"Downloaded gallery image {i + 1} for UUID {beacon.UUID}");
+                    }));
+                    filesDownloaded++;
+                    UpdateProgressBar(filesDownloaded, totalFiles);
+                }
+            }
+        }
+
+        // Hide loading screen when all files are downloaded
+        loadingScreen.SetActive(false);
+    }
+
+
+    private IEnumerator DownloadImage(string url, string savePath, System.Action<Sprite> onDownloaded)
+    {
+        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+        {
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                byte[] imageData = texture.EncodeToPNG();
+                File.WriteAllBytes(savePath, imageData);
+
+                Sprite sprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+                onDownloaded?.Invoke(sprite);
+            }
+            else
+            {
+                Debug.LogError($"Failed to download image from {url}: {request.error}");
+            }
         }
     }
 
-    private void UpdateProgressBar(int completed, int total)
+
+
+    private void UpdateProgressBar(int filesDownloaded, int totalFiles)
     {
-        float progress = (float)completed / total;
-        progressBar.value = progress;
+        if (progressBar != null)
+        {
+            progressBar.value = (float)filesDownloaded / totalFiles;
+        }
     }
+
+
 
     public BeaconDetails GetBeaconDetails(string uuid)
     {
-        BeaconDetails details = new BeaconDetails();
+        BeaconDetails details = null;
 
         foreach (var beacon in beaconDetailsList.Beacons)
         {
@@ -140,10 +217,11 @@ public class BeaconManager : MonoBehaviour
             {
                 details = beacon;
 
-                string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
-                if (File.Exists(imagePath))
+                // Load the main image
+                string mainImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_main.png");
+                if (File.Exists(mainImagePath))
                 {
-                    byte[] imageData = File.ReadAllBytes(imagePath);
+                    byte[] imageData = File.ReadAllBytes(mainImagePath);
                     Texture2D texture = new Texture2D(2, 2);
                     texture.LoadImage(imageData);
 
@@ -155,15 +233,48 @@ public class BeaconManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogWarning($"Image for UUID {uuid} not found locally.");
+                    Debug.LogWarning($"Main image for UUID {uuid} not found locally.");
+                }
+
+                // Clear any previously loaded gallery sprites to avoid duplicates
+                details.GallerySprites.Clear();
+
+                // Load gallery images
+                for (int i = 0; i < beacon.GalleryImages.Count; i++)
+                {
+                    string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_gallery_{i}.png");
+                    if (File.Exists(galleryImagePath))
+                    {
+                        byte[] imageData = File.ReadAllBytes(galleryImagePath);
+                        Texture2D texture = new Texture2D(2, 2);
+                        texture.LoadImage(imageData);
+
+                        Sprite gallerySprite = Sprite.Create(
+                            texture,
+                            new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f)
+                        );
+
+                        details.GallerySprites.Add(gallerySprite);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Gallery image {i + 1} for UUID {uuid} not found locally.");
+                    }
                 }
 
                 break;
             }
         }
 
+        if (details == null)
+        {
+            Debug.LogError($"No beacon found with UUID: {uuid}");
+        }
+
         return details;
     }
+
 
     public string[] GetAllUUIDs()
     {
