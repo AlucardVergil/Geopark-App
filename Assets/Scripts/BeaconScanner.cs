@@ -22,10 +22,9 @@ public class BeaconScanner : MonoBehaviour
 	private BeaconManager _beaconManager;
 
     private Dictionary<string, float> _undetectedTimers; // Track undetected timers for each beacon
-    private float undetectedDelay = 0f; // Delay in seconds before destroying undetected beacons
+    private float undetectedDelay = 1f; // Delay in seconds before destroying undetected beacons
 
-    public TMP_Text debugText1;
-    public TMP_Text debugText2;
+    private HashSet<string> detectedUUIDs = new HashSet<string>(); // Tracks currently detected UUIDs
 
 
     // Use this for initialization
@@ -79,15 +78,6 @@ public class BeaconScanner : MonoBehaviour
 
         return uuid;
     }
-
-
-
-    private string NormalizeUUID(string uuid)
-{
-    // Remove everything after the first colon, if it exists
-    int colonIndex = uuid.IndexOf(':');
-    return colonIndex > 0 ? uuid.Substring(0, colonIndex) : uuid;
-}
 
 
 
@@ -154,6 +144,9 @@ public class BeaconScanner : MonoBehaviour
                     {
                         string UUID = FormatUUID(iBeaconData.UUID.ToLower());
 
+                        // Update the detected UUIDs
+                        detectedUUIDs.Add(UUID);
+
                         // Reset undetected timer if the beacon is detected
                         if (_undetectedTimers.ContainsKey(UUID))
                             _undetectedTimers.Remove(UUID);
@@ -202,14 +195,26 @@ public class BeaconScanner : MonoBehaviour
                         }
                     });
 
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
                     // Handle undetected beacons with delay
                     HandleUndetectedBeacons();
 #endif
                 }
                 else
                 {
+                    // Stop scanning and process missing UUIDs
                     BluetoothLEHardwareInterface.StopScan();
+
+                    // Compare detected UUIDs with existing items and clean up missing ones
+                    var itemsToDestroy = _iBeaconItems.Keys.Except(detectedUUIDs).ToList();
+                    foreach (var uuid in itemsToDestroy)
+                    {
+                        Destroy(_iBeaconItems[uuid].gameObject);
+                        _iBeaconItems.Remove(uuid);
+                    }
+
+                    // Reset for the next scan
+                    detectedUUIDs.Clear();
                     _startScan = true;
                     _timeout = _startScanDelay;
                 }
@@ -221,20 +226,11 @@ public class BeaconScanner : MonoBehaviour
 
     void HandleUndetectedBeacons()
     {
-        // Get all currently detected UUIDs
-        var detectedUUIDs = iBeaconUUIDs.Select(uuid => NormalizeUUID(uuid.ToLower())).ToList();
-
         // Update timers for undetected beacons
         foreach (var uuid in _iBeaconItems.Keys.ToList())
         {
-            debugText1.text = _iBeaconItems.First().Key;
-            debugText2.text = detectedUUIDs[0];
-
-            Debug.Log(uuid);
-            Debug.Log("test " + _iBeaconItems[uuid].gameObject);
-            Debug.Log(detectedUUIDs.Contains(uuid));
             if (!detectedUUIDs.Contains(uuid))
-            {
+            { 
                 Debug.Log("if (!detectedUUIDs.Contains(uuid))");
                 if (!_undetectedTimers.ContainsKey(uuid))
                     _undetectedTimers[uuid] = undetectedDelay;
