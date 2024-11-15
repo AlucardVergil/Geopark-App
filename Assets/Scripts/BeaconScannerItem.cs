@@ -45,7 +45,7 @@ public class BeaconScannerItem : MonoBehaviour
         GetComponent<Button>().onClick.AddListener(() =>
         {
             // Get Beacon Details
-            BeaconDetails details = _beaconManager.GetBeaconDetails(UUID);
+            BeaconDetails details = _beaconManager.GetBeaconGalleryImages(UUID);
 
             // Check if details are found
             if (details != null)
@@ -64,7 +64,7 @@ public class BeaconScannerItem : MonoBehaviour
                 
                 
                 scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
-                
+
                 galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");
 
                 if (galleryScrollViewContent.transform.childCount == 0)
@@ -75,7 +75,7 @@ public class BeaconScannerItem : MonoBehaviour
                         galleryImage.GetComponent<Image>().sprite = details.GallerySprites[i];
                     }
                 }
-                               
+
 
                 scrollViewGallery.SetActive(false);
 

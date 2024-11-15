@@ -234,7 +234,32 @@ public class BeaconManager : MonoBehaviour
                 else
                 {
                     Debug.LogWarning($"Main image for UUID {uuid} not found locally.");
-                }
+                }                
+
+                break;
+            }
+        }
+
+        if (details == null)
+        {
+            Debug.LogError($"No beacon found with UUID: {uuid}");
+        }
+
+        return details;
+    }
+
+
+
+
+    public BeaconDetails GetBeaconGalleryImages(string uuid)
+    {
+        BeaconDetails details = null;
+
+        foreach (var beacon in beaconDetailsList.Beacons)
+        {
+            if (beacon.UUID == uuid)
+            {
+                details = beacon;                
 
                 // Clear any previously loaded gallery sprites to avoid duplicates
                 details.GallerySprites.Clear();
@@ -274,6 +299,8 @@ public class BeaconManager : MonoBehaviour
 
         return details;
     }
+
+
 
 
     public string[] GetAllUUIDs()
