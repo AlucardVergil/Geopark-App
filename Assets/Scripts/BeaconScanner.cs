@@ -163,7 +163,8 @@ public class BeaconScanner : MonoBehaviour
 						{
                             var iBeaconItem = _iBeaconItems[UUID];
 
-                            iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
+                            if (iBeaconItem.TextTitleFromUUID.text == "")
+                                iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
 
                             iBeaconItem.TextRSSIValue.text = iBeaconData.RSSI.ToString();
 
@@ -177,8 +178,8 @@ public class BeaconScanner : MonoBehaviour
                             if (iBeaconData.AndroidSignalPower != 0)
 								iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
 
-
-                            iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;
+                            if (iBeaconItem.GetComponent<Image>().sprite == null)
+                                iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;
                         }
 					});
 				}
