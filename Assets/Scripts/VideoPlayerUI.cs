@@ -63,7 +63,7 @@ public class VideoPlayerUI : MonoBehaviour
         currentTimeText.text = FormatTime((float)videoPlayer.time);
     }
 
-    private void TogglePlayPause()
+    public void TogglePlayPause()
     {
         if (videoPlayer.isPlaying)
         {

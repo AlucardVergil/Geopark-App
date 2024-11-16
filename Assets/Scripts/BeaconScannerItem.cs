@@ -30,13 +30,14 @@ public class BeaconScannerItem : MonoBehaviour
     GameObject scrollViewVideos;
     GameObject videosScrollViewContent;
 
+
     private void Start()
     {
-        _beaconManager = GameObject.Find("BLEManager").GetComponent<BeaconManager>();
+        _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
 
         landmarkDetails = _beaconManager.landmarkDetails;
 
-        mainMenu = GameObject.Find("MainMenu");
+        mainMenu = GameObject.FindGameObjectWithTag("MainMenu");
 
         StartCoroutine(AddClickEvent());
     }

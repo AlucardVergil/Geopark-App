@@ -22,9 +22,13 @@ public class BeaconManager : MonoBehaviour
     private int filesDownloaded = 0; // Track downloaded files
     private int totalFiles = 0;
 
+    public GameObject fullScreenOverlay;
+
 
     void Start()
     {
+        fullScreenOverlay.SetActive(false);
+
         landmarkDetails.SetActive(false);
         loadingScreen.SetActive(true);
         progressBar.value = 0f;

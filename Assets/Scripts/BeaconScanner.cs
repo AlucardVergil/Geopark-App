@@ -30,7 +30,7 @@ public class BeaconScanner : MonoBehaviour
     // Use this for initialization
     void Start ()
 	{
-        _beaconManager = GameObject.Find("BLEManager").GetComponent<BeaconManager>();
+        _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
 
         _iBeaconItems = new Dictionary<string, BeaconScannerItem>();
 
