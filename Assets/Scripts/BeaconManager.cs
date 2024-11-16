@@ -19,7 +19,9 @@ public class BeaconManager : MonoBehaviour
     private string fileId = "1qTmB5Z3HHHe_ue2LRL66YgwntuK-s-w6";
     private string localFilePath;
 
-    private int filesDownloaded; // Track downloaded files
+    private int filesDownloaded = 0; // Track downloaded files
+    private int totalFiles = 0;
+
 
     void Start()
     {
@@ -32,6 +34,7 @@ public class BeaconManager : MonoBehaviour
         // Start downloading the JSON file; if it fails, load the local copy
         StartCoroutine(TryDownloadOrLoadLocalJSON());
     }
+
 
     private IEnumerator TryDownloadOrLoadLocalJSON()
     {
@@ -49,12 +52,7 @@ public class BeaconManager : MonoBehaviour
             Debug.Log("Downloaded JSON and saved to: " + localFilePath);
 
             LoadBeaconData(json);
-
-            totalFiles += beaconDetailsList.Beacons.Count;
-
-            filesDownloaded++;
-            UpdateProgressBar(filesDownloaded, totalFiles);
-
+                      
             yield return StartCoroutine(DownloadImages());
             yield return StartCoroutine(DownloadVideos());
         }
@@ -66,11 +64,6 @@ public class BeaconManager : MonoBehaviour
             {
                 string json = File.ReadAllText(localFilePath);
                 LoadBeaconData(json);
-
-                totalFiles += beaconDetailsList.Beacons.Count;
-
-                filesDownloaded++;
-                UpdateProgressBar(filesDownloaded, totalFiles);
 
                 yield return StartCoroutine(DownloadImages());
                 yield return StartCoroutine(DownloadVideos());
@@ -94,14 +87,18 @@ public class BeaconManager : MonoBehaviour
             beaconDetailsDictionary[beacon.UUID] = beacon;
         }
 
+        totalFiles = beaconDetailsList.Beacons.Count + beaconDetailsList.Beacons.Sum(b => b.GalleryImages.Count + b.VideoURLs.Count);
+
+        filesDownloaded++;
+        UpdateProgressBar(filesDownloaded, totalFiles);
+
         Debug.Log("Beacon data loaded successfully.");
     }
 
 
     private IEnumerator DownloadImages()
     {
-        int filesDownloaded = 0;
-        int totalFiles = beaconDetailsList.Beacons.Count + beaconDetailsList.Beacons.Sum(b => b.GalleryImages.Count);
+
 
         foreach (var beacon in beaconDetailsList.Beacons)
         {
@@ -135,9 +132,6 @@ public class BeaconManager : MonoBehaviour
                 }
             }
         }
-
-        // Hide loading screen when all files are downloaded
-        loadingScreen.SetActive(false);
     }
 
 
@@ -291,6 +285,7 @@ public class BeaconManager : MonoBehaviour
 
     private IEnumerator DownloadVideos()
     {
+
         foreach (var beacon in beaconDetailsList.Beacons)
         {
             for (int i = 0; i < beacon.VideoURLs.Count; i++)
@@ -317,7 +312,7 @@ public class BeaconManager : MonoBehaviour
                 }
 
                 filesDownloaded++;
-                UpdateProgressBar(filesDownloaded, beaconDetailsList.Beacons.Count);
+                UpdateProgressBar(filesDownloaded, totalFiles);
             }
         }
     }
