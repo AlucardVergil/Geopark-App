@@ -12618,12 +12618,9 @@ MonoBehaviour:
       GalleryImages: []
       GallerySprites: []
       VideoURLs: []
-      LocalVideoPaths: []
   landmarkDetails: {fileID: 385947235}
   loadingScreen: {fileID: 410802017}
   progressBar: {fileID: 1543000400}
-  videoPlayer: {fileID: 1427927599014335388, guid: 55e8b5952ef10e047bbedf87c7cdd6fe,
-    type: 3}
 --- !u!1 &1977340040
 GameObject:
   m_ObjectHideFlags: 0

@@ -321,7 +321,10 @@ public class BeaconManager : MonoBehaviour
     {
         if (videoPlayer.isPlaying)
         {
-            videoPlayer.Pause();
+            //videoPlayer.Pause();
+
+            // Make play icon button visible
+            //videoPlayer.transform.GetChild(0).gameObject.SetActive(true);
         }
         else
         {
@@ -332,8 +335,11 @@ public class BeaconManager : MonoBehaviour
                 if (string.IsNullOrEmpty(videoPlayer.url))
                     videoPlayer.url = videoPath; // Set the video path to the VideoPlayer's URL                
 
-                videoPlayer.Play();
+                //videoPlayer.Play();
                 Debug.Log($"Playing video {videoIndex + 1} for UUID {uuid}");
+
+                // Make play icon button hidden
+                //videoPlayer.transform.GetChild(0).gameObject.SetActive(false);
             }
             else
             {

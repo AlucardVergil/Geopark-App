@@ -107,12 +107,13 @@ public class BeaconScannerItem : MonoBehaviour
                         To fix this, I created a local copy of the i variable inside the loop. */
                         int index = i;
 
-                        video.GetComponent<Button>().onClick.AddListener(() =>
-                        {
-                            _beaconManager.PlayVideo(UUID, index, videoPlayer);
-                            
+                        _beaconManager.PlayVideo(UUID, index, videoPlayer);
+                        //video.GetComponent<Button>().onClick.AddListener(() =>
+                        //{
+                        //    _beaconManager.PlayVideo(UUID, index, videoPlayer);
 
-                        });
+
+                        //});
                     }
                 }
 
