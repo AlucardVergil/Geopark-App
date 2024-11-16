@@ -642,6 +642,8 @@ MonoBehaviour:
   UUID: 
   galleryImagePrefab: {fileID: 984741297359554799, guid: d4f10f05c24fa494d94d7e5b2421be60,
     type: 3}
+  videoPrefab: {fileID: 6882031587253775640, guid: 55e8b5952ef10e047bbedf87c7cdd6fe,
+    type: 3}
 --- !u!114 &134561346082694303
 MonoBehaviour:
   m_ObjectHideFlags: 0

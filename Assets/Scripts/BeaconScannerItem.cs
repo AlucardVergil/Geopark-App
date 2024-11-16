@@ -4,6 +4,7 @@ using TMPro;
 //using UnityEditorInternal.Profiling.Memory.Experimental;
 using System.Collections;
 using Unity.XR.CoreUtils;
+using UnityEngine.Video;
 
 public class BeaconScannerItem : MonoBehaviour
 {
@@ -24,6 +25,10 @@ public class BeaconScannerItem : MonoBehaviour
     GameObject scrollViewGallery;
     GameObject galleryScrollViewContent;
 
+    public GameObject videoPrefab;
+    public RenderTexture videoRenderTexture;
+    GameObject scrollViewVideos;
+    GameObject videosScrollViewContent;
 
     private void Start()
     {
@@ -77,7 +82,46 @@ public class BeaconScannerItem : MonoBehaviour
                 }
 
 
+                scrollViewVideos = landmarkDetails.GetNamedChild("Scroll View Videos");
+
+                videosScrollViewContent = scrollViewVideos.GetNamedChild("VideosContent");
+
+                if (videosScrollViewContent.transform.childCount == 0)
+                {
+                    for (int i = 0; i < details.VideoURLs.Count; i++)
+                    {
+                        var video = Instantiate(videoPrefab, videosScrollViewContent.transform);
+                        VideoPlayer videoPlayer = video.GetComponent<VideoPlayer>();
+                        RawImage rawImage = video.GetComponent<RawImage>();
+
+                        // Create a unique RenderTexture for this video
+                        RenderTexture renderTexture = new RenderTexture(1920, 1080, 0); // Adjust size as needed
+                        videoPlayer.targetTexture = renderTexture;
+
+                        // Assign the RenderTexture to the RawImage
+                        rawImage.texture = renderTexture;
+
+                        // Create a local copy of the index
+                        /*When the onClick listener is assigned inside the loop, the lambda captures the variable i by reference, not its value at the time of the loop. 
+                        As a result, when the listener executes, it uses the last value of i after the loop finishes.
+                        To fix this, I created a local copy of the i variable inside the loop. */
+                        int index = i;
+
+                        video.GetComponent<Button>().onClick.AddListener(() =>
+                        {
+                            _beaconManager.PlayVideo(UUID, index, videoPlayer);
+                            
+
+                        });
+                    }
+                }
+
+
+
+
                 scrollViewGallery.SetActive(false);
+
+                scrollViewVideos.SetActive(false);
 
                 mainMenu.SetActive(false);
 

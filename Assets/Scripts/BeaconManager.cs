@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class BeaconManager : MonoBehaviour
 {
@@ -55,6 +56,7 @@ public class BeaconManager : MonoBehaviour
             UpdateProgressBar(filesDownloaded, totalFiles);
 
             yield return StartCoroutine(DownloadImages());
+            yield return StartCoroutine(DownloadVideos());
         }
         else
         {
@@ -71,6 +73,7 @@ public class BeaconManager : MonoBehaviour
                 UpdateProgressBar(filesDownloaded, totalFiles);
 
                 yield return StartCoroutine(DownloadImages());
+                yield return StartCoroutine(DownloadVideos());
             }
             else
             {
@@ -93,37 +96,6 @@ public class BeaconManager : MonoBehaviour
 
         Debug.Log("Beacon data loaded successfully.");
     }
-
-    //private IEnumerator DownloadImages(int totalFiles)
-    //{
-    //    foreach (var beacon in beaconDetailsList.Beacons)
-    //    {
-    //        string imagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}.png");
-
-    //        if (!File.Exists(imagePath))
-    //        {
-    //            using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(beacon.ImageURL))
-    //            {
-    //                yield return request.SendWebRequest();
-
-    //                if (request.result == UnityWebRequest.Result.Success)
-    //                {
-    //                    Texture2D texture = DownloadHandlerTexture.GetContent(request);
-    //                    byte[] imageData = texture.EncodeToPNG();
-    //                    File.WriteAllBytes(imagePath, imageData);
-    //                    Debug.Log($"Downloaded and saved image for UUID {beacon.UUID}");
-    //                }
-    //                else
-    //                {
-    //                    Debug.LogError($"Failed to download image for UUID {beacon.UUID}");
-    //                }
-    //            }
-    //        }
-
-    //        filesDownloaded++;
-    //        UpdateProgressBar(filesDownloaded, totalFiles);
-    //    }
-    //}
 
 
     private IEnumerator DownloadImages()
@@ -313,5 +285,66 @@ public class BeaconManager : MonoBehaviour
         }
 
         return uuidsList.ToArray();
+    }
+
+
+
+    private IEnumerator DownloadVideos()
+    {
+        foreach (var beacon in beaconDetailsList.Beacons)
+        {
+            for (int i = 0; i < beacon.VideoURLs.Count; i++)
+            {
+                string videoPath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_video_{i}.mp4");
+
+                if (!File.Exists(videoPath))
+                {
+                    string videoUrl = beacon.VideoURLs[i];
+                    using (UnityWebRequest request = UnityWebRequest.Get(videoUrl))
+                    {
+                        request.downloadHandler = new DownloadHandlerFile(videoPath);
+                        yield return request.SendWebRequest();
+
+                        if (request.result == UnityWebRequest.Result.Success)
+                        {
+                            Debug.Log($"Downloaded video {i + 1} for UUID {beacon.UUID}");
+                        }
+                        else
+                        {
+                            Debug.LogError($"Failed to download video {i + 1} for UUID {beacon.UUID}: {request.error}");
+                        }
+                    }
+                }
+
+                filesDownloaded++;
+                UpdateProgressBar(filesDownloaded, beaconDetailsList.Beacons.Count);
+            }
+        }
+    }
+
+    public void PlayVideo(string uuid, int videoIndex, VideoPlayer videoPlayer)
+    {
+        if (videoPlayer.isPlaying)
+        {
+            videoPlayer.Pause();
+        }
+        else
+        {
+            string videoPath = Path.Combine(Application.persistentDataPath, $"{uuid}_video_{videoIndex}.mp4");
+
+            if (File.Exists(videoPath))
+            {
+                if (string.IsNullOrEmpty(videoPlayer.url))
+                    videoPlayer.url = videoPath; // Set the video path to the VideoPlayer's URL                
+
+                videoPlayer.Play();
+                Debug.Log($"Playing video {videoIndex + 1} for UUID {uuid}");
+            }
+            else
+            {
+                Debug.LogError($"Video {videoIndex + 1} for UUID {uuid} not found locally.");
+            }
+        }
+        
     }
 }

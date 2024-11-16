@@ -17,6 +17,7 @@ public class BeaconDetails
     public List<string> GalleryImages; // List of image URLs for the gallery
     public List<Sprite> GallerySprites = new List<Sprite>(); // Sprites for gallery images
 
+    public List<string> VideoURLs; // List of video URLs
 }
 
 
