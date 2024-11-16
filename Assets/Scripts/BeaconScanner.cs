@@ -231,7 +231,6 @@ public class BeaconScanner : MonoBehaviour
         {
             if (!detectedUUIDs.Contains(uuid))
             { 
-                Debug.Log("if (!detectedUUIDs.Contains(uuid))");
                 if (!_undetectedTimers.ContainsKey(uuid))
                     _undetectedTimers[uuid] = undetectedDelay;
 
@@ -239,7 +238,6 @@ public class BeaconScanner : MonoBehaviour
 
                 if (_undetectedTimers[uuid] <= 0f)
                 {
-                    Debug.Log("Destroy(_iBeaconItems[uuid].gameObject);");
                     Destroy(_iBeaconItems[uuid].gameObject);
                     _iBeaconItems.Remove(uuid);
                     _undetectedTimers.Remove(uuid);

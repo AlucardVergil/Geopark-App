@@ -20,8 +20,8 @@ public class SidePanelController : MonoBehaviour
     void Start()
     {
         // Set the hidden and visible positions
-        hiddenPosition = new Vector2(-400f, 0);
-        visiblePosition = new Vector2(400f, 0);
+        hiddenPosition = new Vector2(-540f, 0);
+        visiblePosition = new Vector2(540f, 0);
 
         // Start the panel in the hidden position
         sidePanel.anchoredPosition = hiddenPosition;
