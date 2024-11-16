@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,10 @@ public class FullScreenVideo : MonoBehaviour
 
     private Transform canvas;
     private Transform originalParent;
-    
+
+    public Sprite fullScreenIcon; // Icon for play
+    public Sprite minimizeScreenIcon; // Icon for pause
+
 
     void Start()
     {
@@ -33,25 +37,39 @@ public class FullScreenVideo : MonoBehaviour
 
     public void ToggleFullScreen()
     {
+        StartCoroutine(FullScreen());
+    }
+
+
+    IEnumerator FullScreen()
+    {
         if (isFullScreen)
         {
+            Screen.orientation = ScreenOrientation.Portrait;
+
+            yield return new WaitForSeconds(0.5f);
+
             // Exit full screen
             videoPlayerContainer.transform.parent = originalParent;
 
             videoPlayerContainer.sizeDelta = originalSize;
             videoPlayerContainer.position = originalPosition;
             fullScreenOverlay?.SetActive(false);
-            Screen.orientation = ScreenOrientation.Portrait;
+            fullScreenButton.GetComponent<Image>().sprite = fullScreenIcon;
         }
         else
         {
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
+
+            yield return new WaitForSeconds(0.5f);
+
             // Enter full screen
             videoPlayerContainer.transform.parent = canvas;
 
             videoPlayerContainer.sizeDelta = new Vector2(Screen.width, Screen.height);
             videoPlayerContainer.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
             fullScreenOverlay?.SetActive(true);
-            Screen.orientation = ScreenOrientation.LandscapeLeft;
+            fullScreenButton.GetComponent<Image>().sprite = minimizeScreenIcon;
 
             GetComponent<VideoPlayerUI>().TogglePlayPause();
         }

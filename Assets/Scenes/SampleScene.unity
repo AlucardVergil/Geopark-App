@@ -9095,6 +9095,7 @@ GameObject:
   - component: {fileID: 1393834995}
   - component: {fileID: 1393834996}
   - component: {fileID: 1393834997}
+  - component: {fileID: 1393834998}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -9119,7 +9120,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0.000009536743, y: 0.00008297}
-  m_SizeDelta: {x: 0, y: 6664.9}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1393834996
 MonoBehaviour:
@@ -9161,6 +9162,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   iBeaconItemPrefab: {fileID: 4431319314130848012, guid: 6c3dfd0ed39e3b94fb040e1b3c03cae5,
     type: 3}
+--- !u!114 &1393834998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393834994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &1394352680
 GameObject:
   m_ObjectHideFlags: 0
@@ -13847,8 +13862,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1126340932}
   m_HandleRect: {fileID: 1126340931}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.2639998
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
