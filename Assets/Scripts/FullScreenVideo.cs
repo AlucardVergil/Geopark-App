@@ -18,6 +18,8 @@ public class FullScreenVideo : MonoBehaviour
     public Sprite fullScreenIcon; // Icon for play
     public Sprite minimizeScreenIcon; // Icon for pause
 
+    private GameObject [] fullScreenToHideObjects;
+
 
     void Start()
     {
@@ -33,6 +35,8 @@ public class FullScreenVideo : MonoBehaviour
 
         canvas = GameObject.FindGameObjectWithTag("Canvas").transform;
         fullScreenOverlay = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>().fullScreenOverlay;
+
+        fullScreenToHideObjects = GameObject.FindGameObjectsWithTag("FullScreenToHideObjects");
     }
 
     public void ToggleFullScreen()
@@ -56,6 +60,12 @@ public class FullScreenVideo : MonoBehaviour
             videoPlayerContainer.position = originalPosition;
             fullScreenOverlay?.SetActive(false);
             fullScreenButton.GetComponent<Image>().sprite = fullScreenIcon;
+
+
+            for (int i = 0; i < fullScreenToHideObjects.Length; i++)
+            {
+                fullScreenToHideObjects[i].SetActive(true);
+            }                           
         }
         else
         {
@@ -72,6 +82,11 @@ public class FullScreenVideo : MonoBehaviour
             fullScreenButton.GetComponent<Image>().sprite = minimizeScreenIcon;
 
             GetComponent<VideoPlayerUI>().TogglePlayPause();
+
+            for (int i = 0; i < fullScreenToHideObjects.Length; i++)
+            {
+                fullScreenToHideObjects[i].SetActive(false);
+            }
         }
 
         isFullScreen = !isFullScreen;
