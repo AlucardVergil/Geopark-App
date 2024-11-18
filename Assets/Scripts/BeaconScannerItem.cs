@@ -67,7 +67,9 @@ public class BeaconScannerItem : MonoBehaviour
 
                 landmarkDetails.GetNamedChild("MainImage").GetComponent<Image>().sprite = details.ImageSprite;
 
-                
+                landmarkDetails.GetComponentInChildren<FavoritesButton>().UUID = UUID;
+
+
                 
                 scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
 

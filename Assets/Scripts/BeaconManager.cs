@@ -24,13 +24,18 @@ public class BeaconManager : MonoBehaviour
 
     public GameObject fullScreenOverlay;
 
+    public GameObject favoritesPanel;
+
 
     void Start()
     {
         fullScreenOverlay.SetActive(false);
 
         landmarkDetails.SetActive(false);
+        favoritesPanel.SetActive(false);
         loadingScreen.SetActive(true);
+        
+
         progressBar.value = 0f;
 
         localFilePath = Path.Combine(Application.persistentDataPath, "BeaconData.json");
