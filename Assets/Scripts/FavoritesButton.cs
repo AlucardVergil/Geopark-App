@@ -11,6 +11,9 @@ public class FavoritesButton : MonoBehaviour
 
     private bool addedToFavorites = false;
 
+    public Sprite heartUnselected;
+    public Sprite heartSelected;
+
 
     // Start is called before the first frame update
     void Start()
@@ -25,6 +28,7 @@ public class FavoritesButton : MonoBehaviour
                 addedToFavorites = false;
 
                 GetComponent<Image>().color = Color.white;
+                GetComponent<Image>().sprite = heartUnselected;
 
                 _favoritesManager.RemoveFromFavorites(UUID);
             }
@@ -33,6 +37,7 @@ public class FavoritesButton : MonoBehaviour
                 addedToFavorites = true;
 
                 GetComponent<Image>().color = Color.red;
+                GetComponent<Image>().sprite = heartSelected;
 
                 _favoritesManager.AddToFavorites(UUID);
             }
@@ -59,11 +64,13 @@ public class FavoritesButton : MonoBehaviour
         {
             addedToFavorites = true;
             GetComponent<Image>().color = Color.red;
+            GetComponent<Image>().sprite = heartSelected;
         }
         else
         {
             addedToFavorites = false;
             GetComponent<Image>().color = Color.white;
+            GetComponent<Image>().sprite = heartUnselected;
         }
     }
 
