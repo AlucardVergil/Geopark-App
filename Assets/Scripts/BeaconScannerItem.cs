@@ -134,6 +134,7 @@ public class BeaconScannerItem : MonoBehaviour
                 }
 
 
+                // Enable and disable sevices icons based on landmark
                 foreach (Transform child in servicesList.transform)
                 {
                     child.gameObject.SetActive(false);
