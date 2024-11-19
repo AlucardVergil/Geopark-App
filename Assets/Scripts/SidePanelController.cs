@@ -13,7 +13,7 @@ public class SidePanelController : MonoBehaviour
     private Vector2 visiblePosition;
     private bool isPanelVisible = false;
 
-
+    public List<Image> mainMenuTabButtons = new List<Image>();
     public List<Image> tabButtons = new List<Image>();
     public Color selectedTabColor;
 
@@ -65,6 +65,27 @@ public class SidePanelController : MonoBehaviour
             {
                 tabButtons[i].GetComponent<Image>().color = Color.white;
                 tabButtons[i].GetComponentInChildren<TMP_Text>().color = Color.white;
+            }
+
+        }
+
+    }
+
+
+
+    public void ChangeMainMenuTabButtonColor(int index)
+    {
+        for (int i = 0; i < mainMenuTabButtons.Count; i++)
+        {
+            if (i == index)
+            {
+                mainMenuTabButtons[i].GetComponent<Image>().color = selectedTabColor;
+                mainMenuTabButtons[i].GetComponentInChildren<TMP_Text>().color = selectedTabColor;
+            }
+            else
+            {
+                mainMenuTabButtons[i].GetComponent<Image>().color = Color.white;
+                mainMenuTabButtons[i].GetComponentInChildren<TMP_Text>().color = Color.white;
             }
 
         }

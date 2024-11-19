@@ -26,6 +26,8 @@ public class BeaconManager : MonoBehaviour
 
     public GameObject favoritesPanel;
 
+    public GameObject mapPanel;
+
 
     void Start()
     {
@@ -33,6 +35,7 @@ public class BeaconManager : MonoBehaviour
 
         landmarkDetails.SetActive(false);
         favoritesPanel.SetActive(false);
+        mapPanel.SetActive(false);
         loadingScreen.SetActive(true);
         
 
