@@ -1,5 +1,6 @@
 using UnityEngine.UI;
 using UnityEngine;
+using System.Collections;
 
 public class MapScrollViewCenterer : MonoBehaviour
 {
@@ -26,6 +27,24 @@ public class MapScrollViewCenterer : MonoBehaviour
         newContentPosition.y = Mathf.Clamp(newContentPosition.y, -mapContent.rect.height + viewport.rect.height, 0);
 
         // Set the content position
-        mapContent.anchoredPosition = newContentPosition;
+        StartCoroutine(SmoothCentering(newContentPosition));
     }
+
+
+    IEnumerator SmoothCentering(Vector2 targetPosition)
+    {
+        float duration = 0.5f; // Animation duration
+        Vector2 initialPosition = mapContent.anchoredPosition;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            mapContent.anchoredPosition = Vector2.Lerp(initialPosition, targetPosition, elapsed / duration);
+            yield return null;
+        }
+
+        mapContent.anchoredPosition = targetPosition;
+    }
+
 }
