@@ -29,7 +29,7 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
 
         // Add listeners to buttons
         leftButton.onClick.AddListener(ScrollLeft);
-        rightButton.onClick.AddListener(ScrollRight);
+        rightButton.onClick.AddListener(ScrollRight);        
     }
 
     public void ScrollLeft()
@@ -69,7 +69,7 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
         SnapToPanel(currentPanelIndex);
     }
 
-    private void SnapToPanel(int index)
+    public void SnapToPanel(int index)
     {
         StartCoroutine(SmoothScrollTo(panelPositions[index]));
     }
