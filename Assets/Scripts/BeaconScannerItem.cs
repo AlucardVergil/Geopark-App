@@ -26,7 +26,6 @@ public class BeaconScannerItem : MonoBehaviour
     GameObject galleryScrollViewContent;
 
     public GameObject videoPrefab;
-    public RenderTexture videoRenderTexture;
     GameObject scrollViewVideos;
     GameObject videosScrollViewContent;
 

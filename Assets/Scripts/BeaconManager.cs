@@ -35,7 +35,6 @@ public class BeaconManager : MonoBehaviour
 
         landmarkDetails.SetActive(false);
         favoritesPanel.SetActive(false);
-        mapPanel.SetActive(false);
         loadingScreen.SetActive(true);
         
 
@@ -85,6 +84,10 @@ public class BeaconManager : MonoBehaviour
                 Debug.LogError("No local JSON file found. The app needs an internet connection to download the JSON initially.");
             }
         }
+
+        mapPanel.GetComponent<LandmarksSlideShowList>().InstantiateMapLandmarkSlides();
+
+        mapPanel.SetActive(false);
 
         loadingScreen.SetActive(false); // Hide loading screen after all downloads are complete
     }
@@ -288,6 +291,20 @@ public class BeaconManager : MonoBehaviour
         foreach (var beacon in beaconDetailsList.Beacons)
         {
             uuidsList.Add(beacon.UUID.ToUpper() + ":Pit01");
+        }
+
+        return uuidsList.ToArray();
+    }
+
+
+
+    public string[] GetAllNormalizedUUIDs()
+    {
+        List<string> uuidsList = new List<string>();
+
+        foreach (var beacon in beaconDetailsList.Beacons)
+        {
+            uuidsList.Add(beacon.UUID.ToLower());
         }
 
         return uuidsList.ToArray();
