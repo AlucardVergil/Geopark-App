@@ -29,6 +29,13 @@ public class BeaconScannerItem : MonoBehaviour
     GameObject scrollViewVideos;
     GameObject videosScrollViewContent;
 
+    GameObject servicesList;
+
+    GameObject accomodation;
+    GameObject food;
+    GameObject parking;
+    GameObject walking;
+
 
     private void Start()
     {
@@ -37,6 +44,13 @@ public class BeaconScannerItem : MonoBehaviour
         landmarkDetails = _beaconManager.landmarkDetails;
 
         mainMenu = GameObject.FindGameObjectWithTag("MainMenu");
+
+        servicesList = landmarkDetails.GetNamedChild("ServicesList");
+
+        accomodation = servicesList.GetNamedChild("Accomodation");
+        food = servicesList.GetNamedChild("Food");
+        parking = servicesList.GetNamedChild("Parking");
+        walking = servicesList.GetNamedChild("Walking");
 
         StartCoroutine(AddClickEvent());
     }
@@ -118,6 +132,25 @@ public class BeaconScannerItem : MonoBehaviour
                         //});
                     }
                 }
+
+
+                foreach (Transform child in servicesList.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+
+                if (details.Accomodation == "yes")
+                    accomodation.SetActive(true);
+
+                if (details.Food == "yes")
+                    food.SetActive(true);
+
+                if (details.Parking == "yes")
+                    parking.SetActive(true);
+
+                if (details.Walking == "yes")
+                    walking.SetActive(true);
+
 
 
 

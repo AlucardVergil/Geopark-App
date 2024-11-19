@@ -12,6 +12,11 @@ public class BeaconDetails
     public string ImageURL;
     public string AdditionalInfo;
 
+    public string Accomodation;
+    public string Food;
+    public string Parking;
+    public string Walking;
+
     public Sprite ImageSprite;
 
     public List<string> GalleryImages; // List of image URLs for the gallery
