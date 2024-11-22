@@ -1,56 +1,52 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using TMPro;
 
 public class PinchZoom2 : MonoBehaviour
 {
-    public RectTransform mapImage;  // Reference to the map image's RectTransform
-    public float zoomSpeed = 0.1f;  // Speed of zooming
-    public float minZoom = 0.5f;    // Minimum zoom scale
-    public float maxZoom = 3f;      // Maximum zoom scale
+    public ScrollRect scrollRect; // Reference to the ScrollRect
+    public RectTransform mapImage; // Reference to the map image RectTransform
+    public float zoomSpeed = 0.1f; // Speed of zooming
+    public float minZoom = 0.5f; // Minimum zoom scale
+    public float maxZoom = 2.0f; // Maximum zoom scale
 
-    private Vector2 prevTouchDelta; // Previous distance between two touches
-    private bool isPinching = false;
+    private bool isZooming = false;
+
+    public TMP_Text debugtext;
 
     void Update()
     {
-        if (Input.touchCount == 2) // Check for two-finger touch
+        debugtext.text = "Touch " + Input.touchCount;
+
+        // Check if there are two touches
+        if (Input.touchCount == 2)
         {
-            // Get the touches
-            Touch touch1 = Input.GetTouch(0);
-            Touch touch2 = Input.GetTouch(1);
-
-            // Calculate the current distance between the two touches
-            Vector2 touch1Pos = touch1.position;
-            Vector2 touch2Pos = touch2.position;
-            Vector2 currentTouchDelta = touch1Pos - touch2Pos;
-
-            if (!isPinching) // Initialize the pinch
+            // Disable scrolling while zooming
+            if (!isZooming)
             {
-                prevTouchDelta = currentTouchDelta;
-                isPinching = true;
+                scrollRect.enabled = false;
+                isZooming = true;
             }
-            else
-            {
-                // Calculate the scale factor based on the change in distance
-                float prevDistance = prevTouchDelta.magnitude;
-                float currentDistance = currentTouchDelta.magnitude;
-                float zoomFactor = (currentDistance - prevDistance) * zoomSpeed;
 
-                // Adjust the scale of the map image
-                Vector3 newScale = mapImage.localScale + Vector3.one * zoomFactor;
-                newScale.x = Mathf.Clamp(newScale.x, minZoom, maxZoom);
-                newScale.y = Mathf.Clamp(newScale.y, minZoom, maxZoom);
-                newScale.z = 1f; // Keep Z scale constant
+            Touch touch0 = Input.GetTouch(0);
+            Touch touch1 = Input.GetTouch(1);
 
-                mapImage.localScale = newScale;
+            // Calculate the current and previous distances between the two touches
+            float prevDistance = (touch0.position - touch0.deltaPosition - (touch1.position - touch1.deltaPosition)).magnitude;
+            float currentDistance = (touch0.position - touch1.position).magnitude;
 
-                // Update previous touch delta
-                prevTouchDelta = currentTouchDelta;
-            }
+            // Calculate the scale factor
+            float scaleChange = (currentDistance - prevDistance) * zoomSpeed * Time.deltaTime;
+
+            // Apply zoom
+            float newScale = Mathf.Clamp(mapImage.localScale.x + scaleChange, minZoom, maxZoom);
+            mapImage.localScale = new Vector3(newScale, newScale, 1);
         }
-        else
+        else if (isZooming)
         {
-            isPinching = false; // Reset pinch state when not touching
+            // Re-enable scrolling after zooming
+            scrollRect.enabled = true;
+            isZooming = false;
         }
     }
 }
