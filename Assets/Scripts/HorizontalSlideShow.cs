@@ -29,7 +29,10 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
 
         // Add listeners to buttons
         leftButton.onClick.AddListener(ScrollLeft);
-        rightButton.onClick.AddListener(ScrollRight);        
+        rightButton.onClick.AddListener(ScrollRight);   
+        
+        if (currentPanelIndex == 0)
+            leftButton.gameObject.SetActive(false);
     }
 
     public void ScrollLeft()
@@ -37,6 +40,7 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
         if (currentPanelIndex > 0)
         {
             currentPanelIndex--;
+
             SnapToPanel(currentPanelIndex);
             mapScrollViewCenterer.CenterOnLandmark(mapGameobject.transform.GetChild(currentPanelIndex).GetComponent<RectTransform>());
         }
@@ -47,6 +51,7 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
         if (currentPanelIndex < panelPositions.Length - 1)
         {
             currentPanelIndex++;
+
             SnapToPanel(currentPanelIndex);
             mapScrollViewCenterer.CenterOnLandmark(mapGameobject.transform.GetChild(currentPanelIndex).GetComponent<RectTransform>());
         }
@@ -71,6 +76,18 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
 
     public void SnapToPanel(int index)
     {
+        if (currentPanelIndex == 0)
+            leftButton.gameObject.SetActive(false);
+        else if (!leftButton.gameObject.activeSelf)
+            leftButton.gameObject.SetActive(true);
+
+        if (currentPanelIndex == panelPositions.Length - 1)
+            rightButton.gameObject.SetActive(false);
+        else if (!rightButton.gameObject.activeSelf)
+            rightButton.gameObject.SetActive(true);
+
+
+
         StartCoroutine(SmoothScrollTo(panelPositions[index]));
     }
 
