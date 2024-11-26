@@ -76,11 +76,13 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
 
     public void SnapToPanel(int index)
     {
+        // Hide left button when reaching 1st panel
         if (currentPanelIndex == 0)
             leftButton.gameObject.SetActive(false);
         else if (!leftButton.gameObject.activeSelf)
             leftButton.gameObject.SetActive(true);
 
+        // Hide right button when reaching last panel
         if (currentPanelIndex == panelPositions.Length - 1)
             rightButton.gameObject.SetActive(false);
         else if (!rightButton.gameObject.activeSelf)
