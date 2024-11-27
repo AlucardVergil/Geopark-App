@@ -16,7 +16,7 @@ public class PinchZoom2 : MonoBehaviour
 
     void Update()
     {
-        debugtext.text = "Touch " + Input.touchCount;
+        debugtext.text = "Touch " + Input.touchCount + " => " + Input.GetTouch(0) + "\n => " + Input.GetTouch(1);
 
         // Check if there are two touches
         if (Input.touchCount == 2)
