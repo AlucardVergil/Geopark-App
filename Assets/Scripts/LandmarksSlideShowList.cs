@@ -43,8 +43,8 @@ public class LandmarksSlideShowList : MonoBehaviour
 
 
         // Set the hidden and visible positions
-        hiddenPosition = new Vector2(-1082f, -161.02f);
-        visiblePosition = new Vector2(0, -161.02f);
+        hiddenPosition = new Vector2(1082f, -161.02f);
+        visiblePosition = new Vector2(-10f, -161.02f);
 
         // Start the panel in the hidden position
         verticalListScrollViewSidePanel.anchoredPosition = hiddenPosition;
