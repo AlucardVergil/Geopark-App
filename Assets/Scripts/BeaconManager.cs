@@ -28,6 +28,8 @@ public class BeaconManager : MonoBehaviour
 
     public GameObject mapPanel;
 
+    public GameObject infoPanel;
+
 
     void Start()
     {
@@ -35,6 +37,7 @@ public class BeaconManager : MonoBehaviour
 
         landmarkDetails.SetActive(false);
         favoritesPanel.SetActive(false);
+        infoPanel.SetActive(false);
         loadingScreen.SetActive(true);
         
 
