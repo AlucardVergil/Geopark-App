@@ -17,10 +17,11 @@ public class MapScrollViewCenterer : MonoBehaviour
         PulsateEffect[] components = mapGameobject.GetComponentsInChildren<PulsateEffect>();
         foreach (PulsateEffect component in components)
         {
-            // Remove the component
-            Destroy(component);
+            if (component.gameObject != landmark.gameObject)             
+                Destroy(component); // Remove the component
         }
-        landmark.AddComponent<PulsateEffect>();
+        if (!landmark.TryGetComponent<PulsateEffect>(out _))
+            landmark.AddComponent<PulsateEffect>();
 
 
         // Get the position of the landmark in the content's local space

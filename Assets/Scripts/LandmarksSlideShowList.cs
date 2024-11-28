@@ -89,24 +89,37 @@ public class LandmarksSlideShowList : MonoBehaviour
     }
 
 
-
-
-    public void TogglePanel()
+    public void OpenPanel()
     {
         StopAllCoroutines();
-        StartCoroutine(SlidePanel());
+        StartCoroutine(OpenSlidePanel());
     }
 
-    private IEnumerator SlidePanel()
+    private IEnumerator OpenSlidePanel()
     {
-        Vector2 targetPosition = isPanelVisible ? hiddenPosition : visiblePosition;
-        while (Vector2.Distance(verticalListScrollViewSidePanel.anchoredPosition, targetPosition) > 0.1f)
+        while (Vector2.Distance(verticalListScrollViewSidePanel.anchoredPosition, visiblePosition) > 0.1f)
         {
-            verticalListScrollViewSidePanel.anchoredPosition = Vector2.Lerp(verticalListScrollViewSidePanel.anchoredPosition, targetPosition, slideSpeed * Time.deltaTime);
+            verticalListScrollViewSidePanel.anchoredPosition = Vector2.Lerp(verticalListScrollViewSidePanel.anchoredPosition, visiblePosition, slideSpeed * Time.deltaTime);
             yield return null;
         }
-        verticalListScrollViewSidePanel.anchoredPosition = targetPosition;
-        isPanelVisible = !isPanelVisible;
+        verticalListScrollViewSidePanel.anchoredPosition = visiblePosition;
+    }
+
+
+    public void ClosePanel()
+    {
+        StopAllCoroutines();
+        StartCoroutine(CloseSlidePanel());
+    }
+
+    private IEnumerator CloseSlidePanel()
+    {
+        while (Vector2.Distance(verticalListScrollViewSidePanel.anchoredPosition, hiddenPosition) > 0.1f)
+        {
+            verticalListScrollViewSidePanel.anchoredPosition = Vector2.Lerp(verticalListScrollViewSidePanel.anchoredPosition, hiddenPosition, slideSpeed * Time.deltaTime);
+            yield return null;
+        }
+        verticalListScrollViewSidePanel.anchoredPosition = hiddenPosition;
     }
 
 
@@ -135,7 +148,7 @@ public class LandmarksSlideShowList : MonoBehaviour
 
                 newItem.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    TogglePanel();
+                    ClosePanel();
                     horizontalSlideShowScrollView.GetComponent<HorizontalSlideshow>().currentPanelIndex = index;
                     horizontalSlideShowScrollView.GetComponent<HorizontalSlideshow>().SnapToPanel(index);
                     mapScrollViewCenterer.CenterOnLandmark(mapGameobject.transform.GetChild(index).GetComponent<RectTransform>());

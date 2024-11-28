@@ -23,6 +23,6 @@ public class PulsateEffect : MonoBehaviour
 
     private void OnDestroy()
     {
-        transform.localScale = originalScale;
+        transform.localScale = Vector3.one;
     }
 }
