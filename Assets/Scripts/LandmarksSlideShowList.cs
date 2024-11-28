@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 using UnityEngine.UI;
-using static BluetoothLEHardwareInterface;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class LandmarksSlideShowList : MonoBehaviour
 {
@@ -31,7 +28,6 @@ public class LandmarksSlideShowList : MonoBehaviour
 
     private Vector2 hiddenPosition;
     private Vector2 visiblePosition;
-    private bool isPanelVisible = false;
 
 
     private void Start()
@@ -43,8 +39,8 @@ public class LandmarksSlideShowList : MonoBehaviour
 
 
         // Set the hidden and visible positions
-        hiddenPosition = new Vector2(1082f, -161.02f);
-        visiblePosition = new Vector2(-10f, -161.02f);
+        hiddenPosition = new Vector2(1082f, -161.01f);
+        visiblePosition = new Vector2(-10f, -161.01f);
 
         // Start the panel in the hidden position
         verticalListScrollViewSidePanel.anchoredPosition = hiddenPosition;
