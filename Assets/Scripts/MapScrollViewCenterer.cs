@@ -1,16 +1,28 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class MapScrollViewCenterer : MonoBehaviour
 {
     public ScrollRect scrollRect; // Reference to the ScrollRect
     public RectTransform mapContent; // The RectTransform of the map image
     public RectTransform viewport; // The RectTransform of the ScrollRect's viewport
+    public Transform mapGameobject;
 
     // Centers the scroll view on a specific landmark.
     public void CenterOnLandmark(RectTransform landmark)
     {
+        // Add pulsating effect on selected landmark map icon and remove it when you switch to a different point
+        PulsateEffect[] components = mapGameobject.GetComponentsInChildren<PulsateEffect>();
+        foreach (PulsateEffect component in components)
+        {
+            // Remove the component
+            Destroy(component);
+        }
+        landmark.AddComponent<PulsateEffect>();
+
+
         // Get the position of the landmark in the content's local space
         Vector2 contentLocalPosition = mapContent.InverseTransformPoint(landmark.position);
 

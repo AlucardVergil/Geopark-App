@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SidePanelController : MonoBehaviour
 {
     public RectTransform sidePanel; // Assign the SidePanel RectTransform here in Inspector
-    public float slideSpeed = 50f; // Adjust for animation speed
+    public float slideSpeed = 15f; // Adjust for animation speed
 
     private Vector2 hiddenPosition;
     private Vector2 visiblePosition;

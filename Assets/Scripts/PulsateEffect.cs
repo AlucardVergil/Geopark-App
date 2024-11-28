@@ -20,4 +20,9 @@ public class PulsateEffect : MonoBehaviour
         // Apply the scale factor to the object
         transform.localScale = originalScale * scaleFactor;
     }
+
+    private void OnDestroy()
+    {
+        transform.localScale = originalScale;
+    }
 }

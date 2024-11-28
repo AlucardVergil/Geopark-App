@@ -89,6 +89,7 @@ public class BeaconManager : MonoBehaviour
         }
 
         mapPanel.GetComponent<LandmarksSlideShowList>().InstantiateMapLandmarkSlides();
+        mapPanel.GetComponent<LandmarksSlideShowList>().InstantiateMapLandmarkVerticalMapList();
 
         mapPanel.SetActive(false);
 

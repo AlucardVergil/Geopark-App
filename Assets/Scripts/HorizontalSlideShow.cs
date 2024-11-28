@@ -11,7 +11,7 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
     public Button leftButton, rightButton; // Navigation buttons
 
     private float[] panelPositions; // Positions for snapping
-    private int currentPanelIndex = 0; // Current panel index
+    [HideInInspector] public int currentPanelIndex = 0; // Current panel index
 
     public MapScrollViewCenterer mapScrollViewCenterer;
     public GameObject mapGameobject;
