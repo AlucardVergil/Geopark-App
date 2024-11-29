@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using TMPro;
+using System.Collections;
 
 public class VideoPlayerUI : MonoBehaviour
 {
@@ -15,6 +16,14 @@ public class VideoPlayerUI : MonoBehaviour
     public Sprite pauseIcon; // Icon for pause
 
     private bool isDragging; // To track if the slider is being dragged
+
+    public GameObject videoControls; // Parent GameObject containing all controls
+    private float controlsTimer; // Timer to track inactivity
+    private bool controlsVisible = true; // Whether the controls are visible
+    public float autoHideDelay = 4.0f; // Time in seconds before hiding controls
+
+    private float lastProgressBarValue = 0;
+
 
     private void Start()
     {
@@ -31,6 +40,9 @@ public class VideoPlayerUI : MonoBehaviour
 
         // Add listener to the slider
         progressBar.onValueChanged.AddListener(OnSliderValueChanged);
+
+        // Detect clicks on the video player area
+        videoPlayer.targetCameraAlpha = 1.0f; // Ensure video is clickable
     }
 
     private void Update()
@@ -41,7 +53,63 @@ public class VideoPlayerUI : MonoBehaviour
             UpdateProgressBar();
             UpdateTimeText();
         }
+
+
+        // Auto-hide controls logic
+        if (videoPlayer.isPlaying && controlsVisible && !isDragging)
+        {
+            controlsTimer += Time.deltaTime;
+
+            if (controlsTimer >= autoHideDelay)
+            {
+                HideControls();
+            }
+        }
     }
+
+
+    // Method to show the controls
+    private void ShowControls()
+    {
+        foreach (Transform child in videoControls.transform)
+            child.gameObject.SetActive(true);
+
+        controlsVisible = true;
+    }
+
+    // Method to hide the controls
+    private void HideControls()
+    {
+        foreach (Transform child in videoControls.transform)
+            child.gameObject.SetActive(false);
+
+        controlsVisible = false;
+    }
+
+    // Detect clicks on the video player to toggle controls
+    public void OnVideoClicked()
+    {
+        if (!controlsVisible)
+        {
+            ResetControlsTimer();
+        }
+        else
+        {
+            controlsTimer = 0;
+        }
+    }
+
+    // Method to reset the controls timer
+    private void ResetControlsTimer()
+    {
+        controlsTimer = 0;
+        if (!controlsVisible)
+        {
+            ShowControls();
+        }
+    }
+
+
 
     private void OnVideoPrepared(VideoPlayer vp)
     {
@@ -74,15 +142,34 @@ public class VideoPlayerUI : MonoBehaviour
         {
             videoPlayer.Pause();
             audioSource.Pause(); // Pause audio
-            playPauseButton.image.sprite = playIcon;
+            playPauseButton.image.sprite = playIcon;            
         }
         else
         {
-            videoPlayer.Play();
-            audioSource.Play(); // Play audio
-            playPauseButton.image.sprite = pauseIcon;
+            //lastProgressBarValue = progressBar.value;
+            //videoPlayer.Play();
+            //videoPlayer.time = lastProgressBarValue;
+
+            //audioSource.Play(); // Play audio
+            //playPauseButton.image.sprite = pauseIcon;
+            StartCoroutine(StartVideo());
         }
     }
+
+
+    IEnumerator StartVideo()
+    {
+        lastProgressBarValue = progressBar.value;
+
+        yield return new WaitForSeconds(0.05f);
+        videoPlayer.Play();
+        yield return new WaitForSeconds(0.05f);
+        videoPlayer.time = lastProgressBarValue;
+
+        audioSource.Play(); // Play audio
+        playPauseButton.image.sprite = pauseIcon;
+    }
+
 
     private void OnSliderValueChanged(float value)
     {

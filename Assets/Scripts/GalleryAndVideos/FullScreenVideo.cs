@@ -61,6 +61,9 @@ public class FullScreenVideo : MonoBehaviour
             fullScreenOverlay?.SetActive(false);
             fullScreenButton.GetComponent<Image>().sprite = fullScreenIcon;
 
+            GetComponent<VideoPlayerUI>().playPauseButton.image.sprite = GetComponent<VideoPlayerUI>().playIcon;
+
+            //GetComponent<VideoPlayerUI>().TogglePlayPause();
 
             for (int i = 0; i < fullScreenToHideObjects.Length; i++)
             {
