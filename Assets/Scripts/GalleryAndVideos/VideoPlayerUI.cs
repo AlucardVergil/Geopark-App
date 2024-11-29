@@ -6,6 +6,7 @@ using TMPro;
 public class VideoPlayerUI : MonoBehaviour
 {
     public VideoPlayer videoPlayer; // Reference to the VideoPlayer
+    public AudioSource audioSource; // Reference to the AudioSource for video audio
     public Slider progressBar; // Slider to show video progress
     public TMP_Text currentTimeText; // Text to display current time
     public TMP_Text totalTimeText; // Text to display total video length
@@ -17,6 +18,10 @@ public class VideoPlayerUI : MonoBehaviour
 
     private void Start()
     {
+        // Configure the VideoPlayer to use the AudioSource
+        videoPlayer.audioOutputMode = VideoAudioOutputMode.AudioSource;
+        videoPlayer.SetTargetAudioSource(0, audioSource);
+
         // Prepare the video
         videoPlayer.Prepare();
         videoPlayer.prepareCompleted += OnVideoPrepared;
@@ -68,11 +73,13 @@ public class VideoPlayerUI : MonoBehaviour
         if (videoPlayer.isPlaying)
         {
             videoPlayer.Pause();
+            audioSource.Pause(); // Pause audio
             playPauseButton.image.sprite = playIcon;
         }
         else
         {
             videoPlayer.Play();
+            audioSource.Play(); // Play audio
             playPauseButton.image.sprite = pauseIcon;
         }
     }
@@ -97,6 +104,9 @@ public class VideoPlayerUI : MonoBehaviour
 
         // Seek the video to the new time
         videoPlayer.time = progressBar.value;
+
+        // Synchronize audio with video after seeking
+        audioSource.time = (float)videoPlayer.time;
     }
 
     private string FormatTime(float timeInSeconds)

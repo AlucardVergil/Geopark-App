@@ -910,6 +910,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 1427927599014335388}
+  audioSource: {fileID: 2690583451540763467}
   progressBar: {fileID: 7539161889468972349}
   currentTimeText: {fileID: 1174067736830617198}
   totalTimeText: {fileID: 1549197643984728541}
