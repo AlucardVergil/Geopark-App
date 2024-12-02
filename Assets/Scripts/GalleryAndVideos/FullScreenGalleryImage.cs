@@ -21,6 +21,8 @@ public class FullScreenGalleryImage : MonoBehaviour
 
     private bool isPortraitMode = false; // To track if it's currently portrait mode
 
+    private int galleryImageIndex = 0;
+
     void Start()
     {
         if (fullScreenButton != null)
@@ -64,6 +66,9 @@ public class FullScreenGalleryImage : MonoBehaviour
 
             // Exit full screen
             imageContainer.transform.parent = originalParent;
+
+            imageContainer.SetSiblingIndex(galleryImageIndex);
+
             imageContainer.sizeDelta = originalSize;
             imageContainer.position = originalPosition;
             fullScreenOverlay?.SetActive(false);
@@ -78,6 +83,8 @@ public class FullScreenGalleryImage : MonoBehaviour
         {
             // Wait briefly before entering full screen
             yield return new WaitForSeconds(0.5f);
+
+            galleryImageIndex = imageContainer.GetSiblingIndex();
 
             // Enter full screen
             imageContainer.transform.parent = canvas;

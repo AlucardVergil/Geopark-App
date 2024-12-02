@@ -233,7 +233,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -138.53822}
+  m_AnchoredPosition: {x: 0, y: -138.5381}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &30947674
@@ -6362,7 +6362,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1175265943}
   m_Direction: 2
   m_Value: -0.00000026877908
-  m_Size: 0.5542484
+  m_Size: 0.554248
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8659,7 +8659,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -1.2501221}
+  m_AnchoredPosition: {x: 0, y: -1.25}
   m_SizeDelta: {x: 0, y: -154.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &766824589
@@ -19990,7 +19990,7 @@ MonoBehaviour:
     m_Top: 20
     m_Bottom: 20
   m_ChildAlignment: 1
-  m_Spacing: 20
+  m_Spacing: 50
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -21860,7 +21860,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febcbd32e8d1b3646be8d64ac084331f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UUID: e2c56db5-dffb-48d2-b060-d0f5a71096e0
+  UUID: 987e6543-e21b-45d3-a789-123456789012
   galleryImagePrefab: {fileID: 984741297359554799, guid: d4f10f05c24fa494d94d7e5b2421be60,
     type: 3}
   videoPrefab: {fileID: 6882031587253775640, guid: 55e8b5952ef10e047bbedf87c7cdd6fe,
