@@ -462,7 +462,7 @@ public class BeaconManager : MonoBehaviour
     }
 
 
-
+    // Removes previous gallery images, videos and resets the srvice icons when you press the back button in details panel
     public void ClearGalleryAndVideoContent()
     {
         scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
@@ -471,7 +471,7 @@ public class BeaconManager : MonoBehaviour
 
         foreach (Transform item in galleryScrollViewContent.transform)
         {
-            DestroyImmediate(item.gameObject);
+            Destroy(item.gameObject);
         }
 
 
@@ -481,7 +481,7 @@ public class BeaconManager : MonoBehaviour
 
         foreach (Transform item in videosScrollViewContent.transform)
         {
-            DestroyImmediate(item.gameObject);
+            Destroy(item.gameObject);
         }
 
         // Set all service icons to true to fix bug
