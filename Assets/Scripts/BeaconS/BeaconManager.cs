@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -29,6 +31,16 @@ public class BeaconManager : MonoBehaviour
     public GameObject mapPanel;
 
     public GameObject infoPanel;
+
+    HashSet<string> validFiles = new HashSet<string>();
+
+    GameObject scrollViewGallery;
+    GameObject galleryScrollViewContent;
+
+    GameObject scrollViewVideos;
+    GameObject videosScrollViewContent;
+
+    public Transform servicesList;
 
 
     void Start()
@@ -115,14 +127,39 @@ public class BeaconManager : MonoBehaviour
     }
 
 
+
+
+    // Extract the unique ID from a Google Drive URL or similar URL formats
+    private string ExtractUniqueID(string url)
+    {
+        // Check if the URL contains the "id=" parameter
+        if (url.Contains("id="))
+        {
+            // Extract the part after "id="
+            var uri = new Uri(url);
+            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            return queryParams["id"]; // Returns the unique ID
+        }
+
+        // If no "id=" parameter, use a fallback like the last segment
+        return Path.GetFileNameWithoutExtension(url);
+    }
+
+
+
+
     private IEnumerator DownloadImages()
     {
-
+        //HashSet<string> validFiles = new HashSet<string>();
 
         foreach (var beacon in beaconDetailsList.Beacons)
         {
+            string mainImageID = ExtractUniqueID(beacon.ImageURL);
+
             // Download the main image
-            string mainImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_main.png");
+            string mainImagePath = Path.Combine(Application.persistentDataPath, $"{mainImageID}.png");
+            validFiles.Add(mainImageID + ".png");
+
             if (!File.Exists(mainImagePath))
             {
                 yield return StartCoroutine(DownloadImage(beacon.ImageURL, mainImagePath, sprite =>
@@ -137,7 +174,10 @@ public class BeaconManager : MonoBehaviour
             // Download gallery images
             for (int i = 0; i < beacon.GalleryImages.Count; i++)
             {
-                string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_gallery_{i}.png");
+                string galleryImageID = ExtractUniqueID(beacon.GalleryImages[i]);
+                string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{galleryImageID}.png");
+                validFiles.Add(galleryImageID + ".png");
+
                 if (!File.Exists(galleryImagePath))
                 {
                     string galleryImageUrl = beacon.GalleryImages[i];
@@ -149,6 +189,18 @@ public class BeaconManager : MonoBehaviour
                     filesDownloaded++;
                     UpdateProgressBar(filesDownloaded, totalFiles);
                 }
+            }
+        }
+
+
+        // Delete orphaned files
+        var existingFiles = Directory.GetFiles(Application.persistentDataPath);
+        foreach (var file in existingFiles)
+        {
+            if (file.Contains(".png") && !validFiles.Contains(Path.GetFileName(file)))
+            {
+                File.Delete(file);
+                Debug.Log($"Deleted orphaned file: {file}");
             }
         }
     }
@@ -202,8 +254,10 @@ public class BeaconManager : MonoBehaviour
             {
                 details = beacon;
 
+                string mainImageID = ExtractUniqueID(beacon.ImageURL);
+
                 // Load the main image
-                string mainImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_main.png");
+                string mainImagePath = Path.Combine(Application.persistentDataPath, $"{mainImageID}.png");
                 if (File.Exists(mainImagePath))
                 {
                     byte[] imageData = File.ReadAllBytes(mainImagePath);
@@ -248,11 +302,13 @@ public class BeaconManager : MonoBehaviour
 
                 // Clear any previously loaded gallery sprites to avoid duplicates
                 details.GallerySprites.Clear();
-
+                
                 // Load gallery images
                 for (int i = 0; i < beacon.GalleryImages.Count; i++)
                 {
-                    string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_gallery_{i}.png");
+                    string galleryImageID = ExtractUniqueID(beacon.GalleryImages[i]);
+
+                    string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{galleryImageID}.png");
                     if (File.Exists(galleryImagePath))
                     {
                         byte[] imageData = File.ReadAllBytes(galleryImagePath);
@@ -323,7 +379,9 @@ public class BeaconManager : MonoBehaviour
         {
             for (int i = 0; i < beacon.VideoURLs.Count; i++)
             {
-                string videoPath = Path.Combine(Application.persistentDataPath, $"{beacon.UUID}_video_{i}.mp4");
+                string videoID = ExtractUniqueID(beacon.VideoURLs[i]);
+                string videoPath = Path.Combine(Application.persistentDataPath, $"{videoID}.mp4");
+                validFiles.Add(videoID + ".mp4");                
 
                 if (!File.Exists(videoPath))
                 {
@@ -348,6 +406,18 @@ public class BeaconManager : MonoBehaviour
                 UpdateProgressBar(filesDownloaded, totalFiles);
             }
         }
+
+
+        // Delete orphaned files
+        var existingFiles = Directory.GetFiles(Application.persistentDataPath);
+        foreach (var file in existingFiles)
+        {
+            if (file.Contains(".mp4") && !validFiles.Contains(Path.GetFileName(file)))
+            {
+                File.Delete(file);
+                Debug.Log($"Deleted orphaned file: {file}");
+            }
+        }
     }
 
     public void PlayVideo(string uuid, int videoIndex, VideoPlayer videoPlayer)
@@ -361,7 +431,16 @@ public class BeaconManager : MonoBehaviour
         }
         else
         {
-            string videoPath = Path.Combine(Application.persistentDataPath, $"{uuid}_video_{videoIndex}.mp4");
+            string videoID = "";
+
+            foreach (var beacon in beaconDetailsList.Beacons)
+            {
+                if (beacon.UUID == uuid)
+                    videoID = ExtractUniqueID(beacon.VideoURLs[videoIndex]);
+            }
+
+                    
+            string videoPath = Path.Combine(Application.persistentDataPath, $"{videoID}.mp4");
 
             if (File.Exists(videoPath))
             {
@@ -380,5 +459,33 @@ public class BeaconManager : MonoBehaviour
             }
         }
         
+    }
+
+
+
+    public void ClearGalleryAndVideoContent()
+    {
+        scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
+
+        galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");
+
+        foreach (Transform item in galleryScrollViewContent.transform)
+        {
+            DestroyImmediate(item.gameObject);
+        }
+
+
+        scrollViewVideos = landmarkDetails.GetNamedChild("Scroll View Videos");
+
+        videosScrollViewContent = scrollViewVideos.GetNamedChild("VideosContent");
+
+        foreach (Transform item in videosScrollViewContent.transform)
+        {
+            DestroyImmediate(item.gameObject);
+        }
+
+        // Set all service icons to true to fix bug
+        foreach (Transform child in servicesList)
+            child.gameObject.SetActive(true);
     }
 }

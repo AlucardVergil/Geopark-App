@@ -78,6 +78,13 @@ public class BeaconScannerItem : MonoBehaviour
 
                 landmarkDetails.GetNamedChild("ContentText").GetComponent<TMP_Text>().text = details.Info;
 
+                // Scroll text content to the top when opened
+                var rectTransform = landmarkDetails.GetNamedChild("Content").GetComponent<RectTransform>();
+                Vector2 currentPosition = rectTransform.anchoredPosition;
+                currentPosition.y = 0;
+                rectTransform.anchoredPosition = currentPosition;
+                
+
                 landmarkDetails.GetNamedChild("MainImage").GetComponent<Image>().sprite = details.ImageSprite;
 
                 landmarkDetails.GetComponentInChildren<FavoritesButton>().UUID = UUID;
@@ -86,13 +93,21 @@ public class BeaconScannerItem : MonoBehaviour
                 
                 scrollViewGallery = landmarkDetails.GetNamedChild("Scroll View Gallery");
 
-                galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");
+                galleryScrollViewContent = scrollViewGallery.GetNamedChild("GalleryContent");                
 
-                if (galleryScrollViewContent.transform.childCount == 0)
+                GameObject galleryParentGameobject = new GameObject(UUID);
+                galleryParentGameobject.transform.parent = galleryScrollViewContent.transform;
+                GridLayoutGroup galleryParentLayout = galleryParentGameobject.AddComponent<GridLayoutGroup>();
+                galleryParentLayout.padding = new (20,20,20,20);
+                galleryParentLayout.cellSize = new Vector2(450,450);
+                galleryParentLayout.spacing = new Vector2(20,20);
+                galleryParentLayout.childAlignment = TextAnchor.UpperCenter;
+
+                if (galleryParentGameobject.transform.childCount == 0)
                 {
                     for (int i = 0; i < details.GallerySprites.Count; i++)
                     {
-                        var galleryImage = Instantiate(galleryImagePrefab, galleryScrollViewContent.transform);
+                        var galleryImage = Instantiate(galleryImagePrefab, galleryParentGameobject.transform);
                         galleryImage.GetComponent<Image>().sprite = details.GallerySprites[i];
                     }
                 }
@@ -102,11 +117,20 @@ public class BeaconScannerItem : MonoBehaviour
 
                 videosScrollViewContent = scrollViewVideos.GetNamedChild("VideosContent");
 
-                if (videosScrollViewContent.transform.childCount == 0)
+                GameObject videoParentGameobject = new GameObject(UUID);
+                videoParentGameobject.transform.parent = videosScrollViewContent.transform;
+                VerticalLayoutGroup videoParentLayout = videoParentGameobject.AddComponent<VerticalLayoutGroup>();
+                videoParentLayout.padding = new(20, 20, 20, 20);
+                videoParentLayout.spacing = 50;
+                videoParentLayout.childAlignment = TextAnchor.UpperCenter;
+                videoParentLayout.childControlHeight = false;
+                videoParentLayout.childControlWidth = false;
+
+                if (videoParentGameobject.transform.childCount == 0)
                 {
                     for (int i = 0; i < details.VideoURLs.Count; i++)
                     {
-                        var video = Instantiate(videoPrefab, videosScrollViewContent.transform);
+                        var video = Instantiate(videoPrefab, videoParentGameobject.transform);
                         VideoPlayer videoPlayer = video.GetComponent<VideoPlayer>();
                         RawImage rawImage = video.GetComponent<RawImage>();
 
