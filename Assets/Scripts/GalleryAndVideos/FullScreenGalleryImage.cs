@@ -114,10 +114,12 @@ public class FullScreenGalleryImage : MonoBehaviour
         float imageAspectRatio = (float)GetComponent<Image>().mainTexture.width / GetComponent<Image>().mainTexture.height;
 
         // Check if the screen is in portrait or landscape
-        if (screenWidth < screenHeight) // Portrait Mode
+        if (imageAspectRatio <= 1) // Portrait Mode  //if (screenWidth < screenHeight)
         {
             float targetHeight = screenHeight;
             float targetWidth = targetHeight * imageAspectRatio;
+
+            Screen.orientation = ScreenOrientation.Portrait;
 
             // Ensure the image fits within the screen in portrait mode, leave space if necessary
             if (targetWidth > screenWidth)
@@ -135,6 +137,8 @@ public class FullScreenGalleryImage : MonoBehaviour
         {
             float targetWidth = screenWidth;
             float targetHeight = targetWidth / imageAspectRatio;
+
+            Screen.orientation = ScreenOrientation.LandscapeLeft;
 
             // Ensure the image fits within the screen in landscape mode, leave space if necessary
             if (targetHeight > screenHeight)
