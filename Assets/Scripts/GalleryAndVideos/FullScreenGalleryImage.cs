@@ -111,7 +111,7 @@ public class FullScreenGalleryImage : MonoBehaviour
         float screenHeight = Screen.height;
 
         // Get image's aspect ratio
-        float imageAspectRatio = (float)imageContainer.rect.width / imageContainer.rect.height;
+        float imageAspectRatio = (float)GetComponent<Image>().mainTexture.width / GetComponent<Image>().mainTexture.height;
 
         // Check if the screen is in portrait or landscape
         if (screenWidth < screenHeight) // Portrait Mode
