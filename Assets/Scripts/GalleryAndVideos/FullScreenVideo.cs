@@ -20,6 +20,9 @@ public class FullScreenVideo : MonoBehaviour
 
     private GameObject [] fullScreenToHideObjects;
 
+    private GameObject closeFullScreenButton;
+
+
 
     void Start()
     {
@@ -37,6 +40,8 @@ public class FullScreenVideo : MonoBehaviour
         fullScreenOverlay = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>().fullScreenOverlay;
 
         fullScreenToHideObjects = GameObject.FindGameObjectsWithTag("FullScreenToHideObjects");
+
+        closeFullScreenButton = fullScreenOverlay.transform.GetChild(0).gameObject;
     }
 
     public void ToggleFullScreen()
@@ -49,6 +54,8 @@ public class FullScreenVideo : MonoBehaviour
     {
         if (isFullScreen)
         {
+            closeFullScreenButton.SetActive(true);
+
             Screen.orientation = ScreenOrientation.Portrait;
 
             yield return new WaitForSeconds(0.5f);
@@ -72,6 +79,8 @@ public class FullScreenVideo : MonoBehaviour
         }
         else
         {
+            closeFullScreenButton.SetActive(false);
+
             Screen.orientation = ScreenOrientation.LandscapeLeft;
 
             yield return new WaitForSeconds(0.5f);

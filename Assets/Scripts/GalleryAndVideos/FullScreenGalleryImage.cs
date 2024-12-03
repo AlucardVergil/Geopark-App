@@ -51,6 +51,8 @@ public class FullScreenGalleryImage : MonoBehaviour
             aspectRatioFitter = imageContainer.gameObject.AddComponent<AspectRatioFitter>();
         }
         // aspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+
+        fullScreenOverlay.GetComponentInChildren<Button>().onClick.AddListener(CloseFullScreen);
     }
 
     // Toggle full-screen mode
@@ -59,8 +61,49 @@ public class FullScreenGalleryImage : MonoBehaviour
         StartCoroutine(FullScreen());
     }
 
+
+    public void CloseFullScreen()
+    {
+        StartCoroutine(ExitFullScreen());
+    }
+
+
+
     // Fullscreen logic to change image size and position
     IEnumerator FullScreen()
+    {
+        if (!isFullScreen)
+        {
+            // Wait briefly before entering full screen
+            yield return new WaitForSeconds(0.5f);
+
+            EnableAutoRotation();
+
+            galleryImageIndex = imageContainer.GetSiblingIndex();
+
+            // Enter full screen
+            imageContainer.transform.parent = canvas;
+
+            // Make sure the image is not stretched but scaled properly
+            StartCoroutine(UpdateImageSize());
+
+            fullScreenOverlay?.SetActive(true);
+
+            // Hide other objects
+            for (int i = 0; i < fullScreenToHideObjects.Length; i++)
+            {
+                fullScreenToHideObjects[i].SetActive(false);
+            }
+
+            isFullScreen = true;
+        }
+
+        
+    }
+
+
+
+    IEnumerator ExitFullScreen()
     {
         if (isFullScreen)
         {
@@ -83,33 +126,13 @@ public class FullScreenGalleryImage : MonoBehaviour
             {
                 fullScreenToHideObjects[i].SetActive(true);
             }
-        }
-        else
-        {
-            // Wait briefly before entering full screen
-            yield return new WaitForSeconds(0.5f);
 
-            EnableAutoRotation();
-
-            galleryImageIndex = imageContainer.GetSiblingIndex();
-
-            // Enter full screen
-            imageContainer.transform.parent = canvas;
-
-            // Make sure the image is not stretched but scaled properly
-            StartCoroutine(UpdateImageSize());
-
-            fullScreenOverlay?.SetActive(true);
-
-            // Hide other objects
-            for (int i = 0; i < fullScreenToHideObjects.Length; i++)
-            {
-                fullScreenToHideObjects[i].SetActive(false);
-            }
-        }
-
-        isFullScreen = !isFullScreen;
+            isFullScreen = false;
+        }        
     }
+
+
+
 
     // Update image size while maintaining aspect ratio, adjusting for portrait and landscape
     private IEnumerator UpdateImageSize()
