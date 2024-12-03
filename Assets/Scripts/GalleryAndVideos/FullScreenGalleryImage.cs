@@ -23,6 +23,9 @@ public class FullScreenGalleryImage : MonoBehaviour
 
     private int galleryImageIndex = 0;
 
+    private ScreenOrientation previousOrientation;
+
+
     void Start()
     {
         if (fullScreenButton != null)
@@ -64,6 +67,8 @@ public class FullScreenGalleryImage : MonoBehaviour
             // Wait briefly before exiting full screen
             yield return new WaitForSeconds(0.5f);
 
+            DisableAutoRotation();
+
             // Exit full screen
             imageContainer.transform.parent = originalParent;
 
@@ -84,13 +89,15 @@ public class FullScreenGalleryImage : MonoBehaviour
             // Wait briefly before entering full screen
             yield return new WaitForSeconds(0.5f);
 
+            EnableAutoRotation();
+
             galleryImageIndex = imageContainer.GetSiblingIndex();
 
             // Enter full screen
             imageContainer.transform.parent = canvas;
 
             // Make sure the image is not stretched but scaled properly
-            UpdateImageSize();
+            StartCoroutine(UpdateImageSize());
 
             fullScreenOverlay?.SetActive(true);
 
@@ -105,8 +112,10 @@ public class FullScreenGalleryImage : MonoBehaviour
     }
 
     // Update image size while maintaining aspect ratio, adjusting for portrait and landscape
-    private void UpdateImageSize()
+    private IEnumerator UpdateImageSize()
     {
+        yield return new WaitForSeconds(0.1f);
+
         float screenWidth = Screen.width;
         float screenHeight = Screen.height;
 
@@ -114,12 +123,10 @@ public class FullScreenGalleryImage : MonoBehaviour
         float imageAspectRatio = (float)GetComponent<Image>().mainTexture.width / GetComponent<Image>().mainTexture.height;
 
         // Check if the screen is in portrait or landscape
-        if (imageAspectRatio <= 1) // Portrait Mode  //if (screenWidth < screenHeight)
+        if (Screen.orientation == ScreenOrientation.Portrait) //if (imageAspectRatio <= 1) // Portrait Mode  //if (screenWidth < screenHeight)
         {
             float targetHeight = screenHeight;
             float targetWidth = targetHeight * imageAspectRatio;
-
-            Screen.orientation = ScreenOrientation.Portrait;
 
             // Ensure the image fits within the screen in portrait mode, leave space if necessary
             if (targetWidth > screenWidth)
@@ -130,15 +137,11 @@ public class FullScreenGalleryImage : MonoBehaviour
 
             imageContainer.sizeDelta = new Vector2(targetWidth, targetHeight);
             imageContainer.position = new Vector3(screenWidth / 2, screenHeight / 2, 0);
-
-            isPortraitMode = false;
         }
         else // Landscape Mode
         {
             float targetWidth = screenWidth;
             float targetHeight = targetWidth / imageAspectRatio;
-
-            Screen.orientation = ScreenOrientation.LandscapeLeft;
 
             // Ensure the image fits within the screen in landscape mode, leave space if necessary
             if (targetHeight > screenHeight)
@@ -149,23 +152,56 @@ public class FullScreenGalleryImage : MonoBehaviour
 
             imageContainer.sizeDelta = new Vector2(targetWidth, targetHeight);
             imageContainer.position = new Vector3(screenWidth / 2, screenHeight / 2, 0);
-
-            isPortraitMode = true;
         }
     }
 
 
     void Update()
     {
-        // Check if the orientation has changed (portrait/landscape)
-        if ((Screen.orientation == ScreenOrientation.Portrait && !isPortraitMode) ||
-            (Screen.orientation == ScreenOrientation.LandscapeLeft && isPortraitMode))
+        if (isFullScreen)
         {
-            // Orientation has changed, so update the image size
-            UpdateImageSize();
+            // Check if the orientation has changed (portrait/landscape)
+            if (Screen.orientation == ScreenOrientation.Portrait && !isPortraitMode)
+            {
+                // Orientation has changed, so update the image size
+                isPortraitMode = true;
+                StartCoroutine(UpdateImageSize());
+            }
+            else if (Screen.orientation == ScreenOrientation.LandscapeLeft && isPortraitMode || Screen.orientation == ScreenOrientation.LandscapeRight && isPortraitMode)
+            {
+                isPortraitMode = false;
+                StartCoroutine(UpdateImageSize());
+            }
         }
+
     }
 
+
+    
+
+    // Call this method to enable auto-rotation
+    public void EnableAutoRotation()
+    {
+        // Save the current orientation to restore later
+        previousOrientation = Screen.orientation;
+
+        // Enable auto-rotation
+        Screen.orientation = ScreenOrientation.AutoRotation;
+
+        // (Optional) Restrict allowed auto-rotation directions
+        Screen.autorotateToLandscapeLeft = true;
+        Screen.autorotateToLandscapeRight = true;
+        Screen.autorotateToPortrait = true;
+        Screen.autorotateToPortraitUpsideDown = false; // Disable if not needed
+    }
+
+
+    // Call this method to restore a fixed orientation
+    public void DisableAutoRotation()
+    {
+        // Restore the previous fixed orientation
+        Screen.orientation = previousOrientation;
+    }
 
 
 }
