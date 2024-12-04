@@ -295,7 +295,8 @@ public class BluetoothLEHardwareInterface
 		bool scanAsked = false;
 		bool locationAsked = false;
 		bool connectAsked = false;
-		bool permissionsGranted = false;
+        bool cameraPermissionAsked = false;
+        bool permissionsGranted = false;
 		float timerValue = 0f;
 
 		while (timerValue < 5f)
@@ -333,9 +334,21 @@ public class BluetoothLEHardwareInterface
 					}
 					else
 					{
-						permissionsGranted = true;
-						break;
-					}
+                        if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
+                        {
+                            if (!cameraPermissionAsked)
+                            {
+                                Permission.RequestUserPermission("android.permission.CAMERA");
+                                cameraPermissionAsked = true;
+                                timerValue = 0; // Reset the timer to wait for the user's response
+                            }
+                        }
+                        else
+                        {
+                            permissionsGranted = true;
+                            break;
+                        }
+                    }
 				}
 			}
 

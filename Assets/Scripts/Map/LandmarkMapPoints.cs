@@ -168,6 +168,13 @@ public class LandmarkMapPoints : MonoBehaviour
 
             mainMenu.SetActive(false);
 
+            //if (TryGetComponent(out QR_Codes qrCodes))
+            //{
+            //    // Disable QR Codes component if it exists after DisplayLandmarkDetails is executed. This is only for the LandmarkMapPoints instance that is attached to
+            //    //BLEManager object and it's in order to stop the update method from executing for no reason when QR scanner is disabled
+            //    qrCodes.enabled = false;
+            //}
+
         }
     }
 }

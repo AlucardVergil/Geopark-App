@@ -7,7 +7,9 @@ using ZXing;
 
 namespace Easy_QRCode.Scanner
 {
-	public class QRCode_Scanner : MonoBehaviour
+
+    //NOTE: I added the camera permissions request in the BluetoothLEHardwareInterface along with the location and bluetooth permissions
+    public class QRCode_Scanner : MonoBehaviour
 	{
 		//Stores the last scanned QR code text
 		public string SavedQRCodeScannedText = "";
@@ -28,7 +30,7 @@ namespace Easy_QRCode.Scanner
 		//Private variables for internal processing and state management
 		private bool IE_Start_Running = false;
 		private BarcodeReader barcodeReader;
-		private bool QRCode_Found = false;
+		public bool QRCode_Found = false;
 		[SerializeField] private RawImage CameraFeed;
 		private WebCamTexture VideoStream;
 		[SerializeField] private GameObject GO_Reticle;
@@ -72,6 +74,7 @@ namespace Easy_QRCode.Scanner
 		private float Saved_VideoStream_Height = 0.0f;
 
 		private int Saved_targetFrameRate = -1;
+
 
 		void OnEnable()
 		{
@@ -167,7 +170,7 @@ namespace Easy_QRCode.Scanner
 						SavedQRCodeScannedText = QRCode_Text;
 						for(int cpt = 0; cpt < QRCodeDisplayedText.Length; cpt++)
 						{
-							QRCodeDisplayedText[cpt].text = SavedQRCodeScannedText;
+							//QRCodeDisplayedText[cpt].text = SavedQRCodeScannedText;
 						}
 
 						//If the setting is to hide when a QR code is found, stop the video stream and deactivate the gameObject
@@ -177,7 +180,7 @@ namespace Easy_QRCode.Scanner
 
 							yield return null;
 
-							gameObject.SetActive(false);
+							transform.parent.gameObject.SetActive(false);
 						}
 						else //If we want to continuously search for a new QR code, we wait for a second and then reset the QR code found flag
 						{
