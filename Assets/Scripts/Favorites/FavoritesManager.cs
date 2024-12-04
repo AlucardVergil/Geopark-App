@@ -111,7 +111,7 @@ public class FavoritesManager : MonoBehaviour
             {
                 var favoriteItem = favoritesItems[UUID];
                 if (favoriteItem.TextTitleFromUUID.text == "")
-                    favoriteItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
+                    favoriteItem.TextTitleFromUUID.text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(UUID).Title : _beaconManager.GetBeaconDetails(UUID).TitleEnglish);
 
                 if (favoriteItem.GetComponent<Image>().sprite == null)
                     favoriteItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;

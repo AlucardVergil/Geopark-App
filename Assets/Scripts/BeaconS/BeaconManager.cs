@@ -42,6 +42,12 @@ public class BeaconManager : MonoBehaviour
 
     public Transform servicesList;
 
+    public bool isEnglish = false;
+
+    public Image languageButton;
+    public Sprite greekFlagSprite;
+    public Sprite englishFlagSprite;
+
 
     void Start()
     {
@@ -59,6 +65,18 @@ public class BeaconManager : MonoBehaviour
 
         // Start downloading the JSON file; if it fails, load the local copy
         StartCoroutine(TryDownloadOrLoadLocalJSON());
+    }
+
+
+
+    public void SwitchLanguage()
+    {
+        isEnglish = !isEnglish;
+
+        if (isEnglish)
+            languageButton.sprite = greekFlagSprite;
+        else
+            languageButton.sprite = englishFlagSprite;
     }
 
 

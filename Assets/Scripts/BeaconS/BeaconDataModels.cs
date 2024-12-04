@@ -8,7 +8,9 @@ public class BeaconDetails
 {
     public string UUID;
     public string Title;
+    public string TitleEnglish;
     public string Info;
+    public string InfoEnglish;
     public string ImageURL;
     public string AdditionalInfo;
 

@@ -59,9 +59,9 @@ public class LandmarkMapPoints : MonoBehaviour
             // Show the details UI
             landmarkDetails.SetActive(true);
 
-            landmarkDetails.GetNamedChild("Title").GetComponent<TMP_Text>().text = details.Title;
+            landmarkDetails.GetNamedChild("Title").GetComponent<TMP_Text>().text = (!_beaconManager.isEnglish ? details.Title : details.TitleEnglish);
 
-            landmarkDetails.GetNamedChild("ContentText").GetComponent<TMP_Text>().text = details.Info;
+            landmarkDetails.GetNamedChild("ContentText").GetComponent<TMP_Text>().text = (!_beaconManager.isEnglish ? details.Info : details.InfoEnglish);
 
             // Scroll text content to the top when opened
             var rectTransform = landmarkDetails.GetNamedChild("Content").GetComponent<RectTransform>();

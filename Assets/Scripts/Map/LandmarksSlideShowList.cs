@@ -64,7 +64,7 @@ public class LandmarksSlideShowList : MonoBehaviour
 
                 newItem.transform.GetChild(0).GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).ImageSprite;
 
-                newItem.GetComponentInChildren<TMP_Text>().text = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title;
+                newItem.GetComponentInChildren<TMP_Text>().text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title : _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).TitleEnglish);
 
                 // Create a local copy of the index
                 /*When the onClick listener is assigned inside the loop, the lambda captures the variable i by reference, not its value at the time of the loop. 
@@ -134,7 +134,7 @@ public class LandmarksSlideShowList : MonoBehaviour
 
                 newItem.transform.GetChild(0).GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).ImageSprite;
 
-                newItem.GetComponentInChildren<TMP_Text>().text = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title;
+                newItem.GetComponentInChildren<TMP_Text>().text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title : _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).TitleEnglish);
 
                 // Create a local copy of the index
                 /*When the onClick listener is assigned inside the loop, the lambda captures the variable i by reference, not its value at the time of the loop. 

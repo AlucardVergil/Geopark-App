@@ -125,7 +125,7 @@ public class BeaconScanner : MonoBehaviour
                     if (_iBeaconItems.ContainsKey("e2c56db5-dffb-48d2-b060-d0f5a71096e0"))
                     {
                         var iBeaconItem = _iBeaconItems["e2c56db5-dffb-48d2-b060-d0f5a71096e0"];
-                        iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails("e2c56db5-dffb-48d2-b060-d0f5a71096e0".ToLower()).Title;
+                        iBeaconItem.TextTitleFromUUID.text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails("e2c56db5-dffb-48d2-b060-d0f5a71096e0".ToLower()).Title : _beaconManager.GetBeaconDetails("e2c56db5-dffb-48d2-b060-d0f5a71096e0".ToLower()).TitleEnglish);
                         iBeaconItem.TextRSSIValue.text = "rssi";
 
                         // Android returns the signal power or measured power, iOS hides this and there is no way to get it
@@ -176,7 +176,7 @@ public class BeaconScanner : MonoBehaviour
                         {
                             var iBeaconItem = _iBeaconItems[UUID];
                             if (iBeaconItem.TextTitleFromUUID.text == "")
-                                iBeaconItem.TextTitleFromUUID.text = _beaconManager.GetBeaconDetails(UUID).Title;
+                                iBeaconItem.TextTitleFromUUID.text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(UUID).Title : _beaconManager.GetBeaconDetails(UUID).TitleEnglish);
 
                             iBeaconItem.TextRSSIValue.text = iBeaconData.RSSI.ToString();
 
