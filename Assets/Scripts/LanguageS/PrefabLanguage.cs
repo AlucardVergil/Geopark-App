@@ -17,7 +17,7 @@ public class PrefabLanguage : MonoBehaviour
     {
         _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
 
-        InvokeRepeating(nameof(CheckIfLanguageChanged), 0f, 2f); // Start immediately, repeat every 1 second
+        InvokeRepeating(nameof(CheckIfLanguageChanged), 0f, 2f); // Start immediately, repeat every 2 second
     }
 
 
