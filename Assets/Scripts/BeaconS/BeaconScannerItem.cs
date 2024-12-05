@@ -52,6 +52,9 @@ public class BeaconScannerItem : MonoBehaviour
         parking = servicesList.GetNamedChild("Parking");
         walking = servicesList.GetNamedChild("Walking");
 
+        GetComponent<PrefabLanguage>().greekTitle = _beaconManager.GetBeaconDetails(UUID).Title;
+        GetComponent<PrefabLanguage>().englishTitle = _beaconManager.GetBeaconDetails(UUID).TitleEnglish;
+
         StartCoroutine(AddClickEvent());
     }
 

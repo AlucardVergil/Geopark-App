@@ -59,6 +59,9 @@ public class LandmarksSlideShowList : MonoBehaviour
             var newItem = Instantiate(landmarkItemPrefab);
             if (newItem != null)
             {
+                newItem.GetComponent<PrefabLanguage>().greekTitle = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title;
+                newItem.GetComponent<PrefabLanguage>().englishTitle = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).TitleEnglish;
+
                 newItem.transform.SetParent(landmarkPanel);
                 newItem.transform.localScale = Vector3.one;
 
@@ -129,6 +132,9 @@ public class LandmarksSlideShowList : MonoBehaviour
             var newItem = Instantiate(verticalListLandmarkItemPrefab);
             if (newItem != null)
             {
+                newItem.GetComponent<PrefabLanguage>().greekTitle = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title;
+                newItem.GetComponent<PrefabLanguage>().englishTitle = _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).TitleEnglish;
+
                 newItem.transform.SetParent(verticalLandmarkPanel);
                 newItem.transform.localScale = Vector3.one;
 
