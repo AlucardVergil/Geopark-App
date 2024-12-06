@@ -12,6 +12,7 @@ public class ZoomMap : MonoBehaviour
     private Vector2 originalSize;
     private float aspectRatio;
 
+    [Header("Set the width increase for zoom in and zoom out. The \nheight is automatically calculated based on the aspect ratio.")]
     public float widthIncreaseAmount = 500f;
     private float heightIncreaseAmount;
 
@@ -42,7 +43,7 @@ public class ZoomMap : MonoBehaviour
     {
         prevZoomIndex = zoomIndex;
         zoomIndex++;
-        zoomIndex = Math.Clamp(zoomIndex, -2, 3);
+        zoomIndex = Math.Clamp(zoomIndex, -3, 3);
 
         if (zoomIndex <= 2)
         {
@@ -56,7 +57,7 @@ public class ZoomMap : MonoBehaviour
     {
         prevZoomIndex = zoomIndex;
         zoomIndex--;
-        zoomIndex = Math.Clamp(zoomIndex, -2, 2);
+        zoomIndex = Math.Clamp(zoomIndex, -3, 3);
 
         if (zoomIndex > -3)
         {            
