@@ -13859,12 +13859,12 @@ RectTransform:
   - {fileID: 1764872632}
   - {fileID: 1265475598}
   - {fileID: 641381360}
-  - {fileID: 254667456}
   - {fileID: 1550130331}
   - {fileID: 1915853669}
   - {fileID: 132246603}
   - {fileID: 525970808}
   - {fileID: 1232936452}
+  - {fileID: 254667456}
   m_Father: {fileID: 1018676662}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
