@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//NOTE: I added some code for QR in QRCode_Scanner.cs and BluetoothHardwareInterface.cs (the bluetooth file is where i added camera permissions)
 public class QR_Codes : MonoBehaviour
 {
     public QRCode_Scanner scanner;

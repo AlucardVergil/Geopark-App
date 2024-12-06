@@ -7930,6 +7930,8 @@ MonoBehaviour:
   galleryBtn: {fileID: 1395362502}
   videosBtn: {fileID: 336366385}
   servicesLabel: {fileID: 1452526385}
+  geoparkInfoTitle: {fileID: 1354174698}
+  geoparkInfo: {fileID: 440435420}
   languageButton: {fileID: 628098336}
   greekFlagSprite: {fileID: 21300000, guid: 3cbbb07e8dc7bbe40b147f404edd749c, type: 3}
   englishFlagSprite: {fileID: 21300000, guid: ff867763d8afb6840b147a1a050e69e6, type: 3}
