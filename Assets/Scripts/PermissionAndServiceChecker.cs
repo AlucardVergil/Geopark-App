@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Android;
@@ -6,6 +7,12 @@ public class PermissionAndServiceChecker : MonoBehaviour
 {
     public GameObject warningPanel;
     public TMP_Text warningText;
+
+    bool isBluetoothEnabled = false;
+    bool isGPSEnabled = false;
+    bool doOnce = true;
+
+    public BeaconScanner scanner;
 
 
     void Start()
@@ -18,6 +25,23 @@ public class PermissionAndServiceChecker : MonoBehaviour
         // Check Bluetooth and GPS status
         CheckBluetoothAndGPS();
     }
+
+
+    private void Update()
+    {
+        isBluetoothEnabled = IsBluetoothEnabled();
+        isGPSEnabled = IsGPSEnabled();
+
+        if (isBluetoothEnabled && isGPSEnabled && doOnce)
+        {
+            scanner.BLEScannerInitialize();
+            doOnce = false;
+        }
+    }
+
+
+
+
 
     void CheckPermissions()
     {
@@ -36,40 +60,87 @@ public class PermissionAndServiceChecker : MonoBehaviour
 #endif
     }
 
+
+
+
     void CheckBluetoothAndGPS()
     {
-        // Check Bluetooth status
-        using (var bluetoothAdapter = new AndroidJavaObject("android.bluetooth.BluetoothAdapter"))
+
+#if UNITY_ANDROID
+        bool isBluetoothEnabled = IsBluetoothEnabled();
+
+        if (!isBluetoothEnabled)
         {
-            if (bluetoothAdapter != null && !bluetoothAdapter.Call<bool>("isEnabled"))
-            {
-                Debug.Log("Bluetooth is disabled. Prompting user to enable it...");
-
-                warningPanel.SetActive(true);
-                warningText.text += "\n\nBluetooth is disabled. Prompting user to enable it...";
-
-                OpenBluetoothSettings();
-            }
+            OpenBluetoothSettings();
         }
 
-        // Check GPS status
-        using (var settingsClass = new AndroidJavaClass("android.location.LocationManager"))
-        using (var activity = new AndroidJavaObject("com.unity3d.player.UnityPlayer"))
+        bool isGPSEnabled = IsGPSEnabled();
+
+        if (!isGPSEnabled)
         {
-            var locationManager = activity.Call<AndroidJavaObject>("getSystemService", settingsClass.GetStatic<string>("LOCATION_SERVICE"));
-            bool isGPSEnabled = locationManager.Call<bool>("isProviderEnabled", "gps");
-
-            if (!isGPSEnabled)
-            {
-                Debug.Log("GPS is disabled. Prompting user to enable it...");
-
-                warningPanel.SetActive(true);
-                warningText.text += "\n\nGPS is disabled. Prompting user to enable it...";
-
-                OpenGPSSettings();
-            }
+            OpenGPSSettings();
         }
+#endif
+
+
     }
+
+
+
+
+    public static bool IsBluetoothEnabled()
+    {
+        bool isEnabled = false;
+
+        try
+        {
+            using (AndroidJavaClass bluetoothAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
+            {
+                AndroidJavaObject bluetoothAdapter = bluetoothAdapterClass.CallStatic<AndroidJavaObject>("getDefaultAdapter");
+                if (bluetoothAdapter != null)
+                {
+                    isEnabled = bluetoothAdapter.Call<bool>("isEnabled");
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error checking Bluetooth status: " + ex.Message);
+        }
+
+        return isEnabled;
+    }
+
+
+
+    public static bool IsGPSEnabled()
+    {
+        bool isEnabled = false;
+
+        try
+        {
+            using (AndroidJavaClass locationManagerClass = new AndroidJavaClass("android.location.LocationManager"))
+            {
+                using (AndroidJavaObject context = new AndroidJavaClass("com.unity3d.player.UnityPlayer")
+                        .GetStatic<AndroidJavaObject>("currentActivity")
+                        .Call<AndroidJavaObject>("getApplicationContext"))
+                {
+                    using (AndroidJavaObject locationManager = context.Call<AndroidJavaObject>("getSystemService", "location"))
+                    {
+                        isEnabled = locationManager.Call<bool>("isProviderEnabled", "gps");
+                    }
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error checking GPS status: " + ex.Message);
+        }
+
+        return isEnabled;
+    }
+
+
 
     public void OpenBluetoothSettings()
     {

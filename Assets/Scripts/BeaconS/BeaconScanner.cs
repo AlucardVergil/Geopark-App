@@ -30,6 +30,14 @@ public class BeaconScanner : MonoBehaviour
     // Use this for initialization
     void Start ()
 	{
+        BLEScannerInitialize();
+    }
+
+
+
+
+    public void BLEScannerInitialize()
+    {
         _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
 
         _iBeaconItems = new Dictionary<string, BeaconScannerItem>();
@@ -38,21 +46,23 @@ public class BeaconScanner : MonoBehaviour
 
         BluetoothLEHardwareInterface.Initialize(true, false, () => {
 
-			_timeout = _startScanDelay;
+            _timeout = _startScanDelay;
 
-			BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowLatency);
-			BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.High);
-		}, 
-		(error) => {
-			
-			BluetoothLEHardwareInterface.Log("Error: " + error);
+            BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowLatency);
+            BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.High);
+        },
+        (error) => {
 
-			if (error.Contains ("Bluetooth LE Not Enabled"))
-				BluetoothLEHardwareInterface.BluetoothEnable(true);
-		}, true);   // for beacon scanning we need to ask for location services on Android.
+            BluetoothLEHardwareInterface.Log("Error: " + error);
+
+            if (error.Contains("Bluetooth LE Not Enabled"))
+                BluetoothLEHardwareInterface.BluetoothEnable(true);
+        }, true);   // for beacon scanning we need to ask for location services on Android.
                     // IMPORTANT: REMOVE android:usesPermissionFlags="neverForLocation" AND android:maxSdkVersion="30"
-                    //            from AndroidManifest.xml file        
+                    //            from AndroidManifest.xml file      
     }
+
+
 
 
     public float Distance (float signalPower, float rssi, float nValue)
