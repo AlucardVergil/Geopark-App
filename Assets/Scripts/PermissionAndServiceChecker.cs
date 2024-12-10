@@ -6,7 +6,6 @@ using UnityEngine.Android;
 public class PermissionAndServiceChecker : MonoBehaviour
 {
     public GameObject warningPanel;
-    public TMP_Text warningText;
 
     bool isBluetoothEnabled = false;
     bool isGPSEnabled = false;
@@ -18,27 +17,34 @@ public class PermissionAndServiceChecker : MonoBehaviour
     void Start()
     {
         warningPanel.SetActive(false);
-
+#if !UNITY_EDITOR
         // Check and request permissions
         CheckPermissions();
 
         // Check Bluetooth and GPS status
         CheckBluetoothAndGPS();
+#endif
     }
 
-
+#if !UNITY_EDITOR
+    // Check if Bluetooth and GPS are enabled in order to initialize the scanner
     private void Update()
     {
-        isBluetoothEnabled = IsBluetoothEnabled();
-        isGPSEnabled = IsGPSEnabled();
-
-        if (isBluetoothEnabled && isGPSEnabled && doOnce)
+        if (doOnce)
         {
-            scanner.BLEScannerInitialize();
-            doOnce = false;
-        }
-    }
+            isBluetoothEnabled = IsBluetoothEnabled();
+            isGPSEnabled = IsGPSEnabled();
 
+            if (isBluetoothEnabled && isGPSEnabled)
+            {
+                scanner.BLEScannerInitialize();
+                doOnce = false;
+            }
+        }
+
+        
+    }
+#endif
 
 
 
@@ -68,17 +74,12 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
 #if UNITY_ANDROID
         bool isBluetoothEnabled = IsBluetoothEnabled();
-
-        if (!isBluetoothEnabled)
-        {
-            OpenBluetoothSettings();
-        }
-
         bool isGPSEnabled = IsGPSEnabled();
 
-        if (!isGPSEnabled)
+        if (!isBluetoothEnabled || !isGPSEnabled)
         {
-            OpenGPSSettings();
+            warningPanel.SetActive(true);
+            //OpenBluetoothSettings();
         }
 #endif
 
@@ -163,4 +164,16 @@ public class PermissionAndServiceChecker : MonoBehaviour
             activity.GetStatic<AndroidJavaObject>("currentActivity").Call("startActivity", intent);
         }
     }
+
+
+
+    public void OpenSettings()
+    {
+        if (!isBluetoothEnabled)
+            OpenBluetoothSettings();
+
+        if (!isGPSEnabled)
+            OpenGPSSettings();
+    }
+
 }
