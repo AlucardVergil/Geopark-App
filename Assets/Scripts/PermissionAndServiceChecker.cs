@@ -26,28 +26,6 @@ public class PermissionAndServiceChecker : MonoBehaviour
 #endif
     }
 
-#if !UNITY_EDITOR
-    // Check if Bluetooth and GPS are enabled in order to initialize the scanner
-    private void Update()
-    {
-        if (doOnce)
-        {
-            isBluetoothEnabled = IsBluetoothEnabled();
-            isGPSEnabled = IsGPSEnabled();
-
-            if (isBluetoothEnabled && isGPSEnabled)
-            {
-                scanner.BLEScannerInitialize();
-                doOnce = false;
-            }
-        }
-
-        
-    }
-#endif
-
-
-
 
     void CheckPermissions()
     {

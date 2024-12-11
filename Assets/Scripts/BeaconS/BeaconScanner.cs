@@ -26,11 +26,16 @@ public class BeaconScanner : MonoBehaviour
 
     private HashSet<string> detectedUUIDs = new HashSet<string>(); // Tracks currently detected UUIDs
 
+    bool isBluetoothEnabled = false;
+    bool isGPSEnabled = false;
+
+
 
     // Use this for initialization
     void Start ()
 	{
-        BLEScannerInitialize();
+        // Invoke every one sec until bluetooth and gps are opened
+        InvokeRepeating(nameof(BLEScannerInitialize), 0f, 1f); // Start immediately, repeat every 1 second
     }
 
 
@@ -38,28 +43,37 @@ public class BeaconScanner : MonoBehaviour
 
     public void BLEScannerInitialize()
     {
-        _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
+        isBluetoothEnabled = PermissionAndServiceChecker.IsBluetoothEnabled();
+        isGPSEnabled = PermissionAndServiceChecker.IsGPSEnabled();
 
-        _iBeaconItems = new Dictionary<string, BeaconScannerItem>();
+        if (isBluetoothEnabled && isGPSEnabled)
+        {
+            _beaconManager = GameObject.FindGameObjectWithTag("BLEManager").GetComponent<BeaconManager>();
 
-        _undetectedTimers = new Dictionary<string, float>();
+            _iBeaconItems = new Dictionary<string, BeaconScannerItem>();
 
-        BluetoothLEHardwareInterface.Initialize(true, false, () => {
+            _undetectedTimers = new Dictionary<string, float>();
 
-            _timeout = _startScanDelay;
+            BluetoothLEHardwareInterface.Initialize(true, false, () =>
+            {
+                _timeout = _startScanDelay;
 
-            BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowLatency);
-            BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.High);
-        },
-        (error) => {
+                BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowLatency);
+                BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.High);
+            },
+            (error) =>
+            {
 
-            BluetoothLEHardwareInterface.Log("Error: " + error);
+                BluetoothLEHardwareInterface.Log("Error: " + error);
 
-            if (error.Contains("Bluetooth LE Not Enabled"))
-                BluetoothLEHardwareInterface.BluetoothEnable(true);
-        }, true);   // for beacon scanning we need to ask for location services on Android.
-                    // IMPORTANT: REMOVE android:usesPermissionFlags="neverForLocation" AND android:maxSdkVersion="30"
-                    //            from AndroidManifest.xml file      
+                if (error.Contains("Bluetooth LE Not Enabled"))
+                    BluetoothLEHardwareInterface.BluetoothEnable(true);
+            }, true);   // for beacon scanning we need to ask for location services on Android.
+                        // IMPORTANT: REMOVE android:usesPermissionFlags="neverForLocation" AND android:maxSdkVersion="30"
+                        //            from AndroidManifest.xml file      
+
+            CancelInvoke(nameof(BLEScannerInitialize));
+        }
     }
 
 
