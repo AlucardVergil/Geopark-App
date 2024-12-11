@@ -9,8 +9,6 @@ public class QR_Codes : MonoBehaviour
     public QRCode_Scanner scanner;
     private LandmarkMapPoints landmarkPoints;
 
-    private bool doOnce = false;
-
     // Start is called before the first frame update
     void Start()
     {

@@ -9,9 +9,6 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
     bool isBluetoothEnabled = false;
     bool isGPSEnabled = false;
-    bool doOnce = true;
-
-    public BeaconScanner scanner;
 
 
     void Start()
@@ -25,6 +22,8 @@ public class PermissionAndServiceChecker : MonoBehaviour
         CheckBluetoothAndGPS();
 #endif
     }
+
+
 
 
     void CheckPermissions()
@@ -51,8 +50,8 @@ public class PermissionAndServiceChecker : MonoBehaviour
     {
 
 #if UNITY_ANDROID
-        bool isBluetoothEnabled = IsBluetoothEnabled();
-        bool isGPSEnabled = IsGPSEnabled();
+        isBluetoothEnabled = IsBluetoothEnabled();
+        isGPSEnabled = IsGPSEnabled();
 
         if (!isBluetoothEnabled || !isGPSEnabled)
         {
@@ -147,6 +146,9 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
     public void OpenSettings()
     {
+        isBluetoothEnabled = IsBluetoothEnabled();
+        isGPSEnabled = IsGPSEnabled();
+
         if (!isBluetoothEnabled)
             OpenBluetoothSettings();
 
