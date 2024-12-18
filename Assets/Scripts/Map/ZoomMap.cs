@@ -43,9 +43,9 @@ public class ZoomMap : MonoBehaviour
     {
         prevZoomIndex = zoomIndex;
         zoomIndex++;
-        zoomIndex = Math.Clamp(zoomIndex, -3, 3);
+        zoomIndex = Math.Clamp(zoomIndex, -3, 12);
 
-        if (zoomIndex <= 3 && prevZoomIndex != zoomIndex)
+        if (zoomIndex <= 12 && prevZoomIndex != zoomIndex)
         {
             UpdateChildrenPosition();
         }        
@@ -57,7 +57,7 @@ public class ZoomMap : MonoBehaviour
     {
         prevZoomIndex = zoomIndex;
         zoomIndex--;
-        zoomIndex = Math.Clamp(zoomIndex, -3, 3);
+        zoomIndex = Math.Clamp(zoomIndex, -3, 12);
 
         if (zoomIndex > -4 && prevZoomIndex != zoomIndex)
         {            
