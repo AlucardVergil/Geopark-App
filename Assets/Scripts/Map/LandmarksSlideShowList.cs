@@ -159,7 +159,7 @@ public class LandmarksSlideShowList : MonoBehaviour
 
         }
 
-        GetComponentInChildren<HorizontalSlideshow>().InitializeAfterLandmarksInstantiate();
+        //GetComponentInChildren<HorizontalSlideshow>().InitializeAfterLandmarksInstantiate();
 
     }
 
