@@ -112,7 +112,10 @@ public class BeaconManager : MonoBehaviour
 
     private void LoadBeaconData(string json)
     {
-        beaconDetailsList = JsonUtility.FromJson<BeaconDetailsList>(json);
+        // Clean json from new lines and carriage returns before processing bcz they cause parsing error
+        string cleanedJson = CleanJson(json);
+
+        beaconDetailsList = JsonUtility.FromJson<BeaconDetailsList>(cleanedJson);
 
         beaconDetailsDictionary = new Dictionary<string, BeaconDetails>();
         foreach (var beacon in beaconDetailsList.Beacons)
@@ -128,6 +131,17 @@ public class BeaconManager : MonoBehaviour
         Debug.Log("Beacon data loaded successfully.");
     }
 
+
+
+    // Clean json from new lines and carriage returns before processing bcz they cause parsing error
+    string CleanJson(string rawJson)
+    {
+        // Replace single line breaks with spaces, preserve paragraph structure
+        rawJson = rawJson.Replace("\r", ""); // Remove carriage returns (if present)
+        rawJson = rawJson.Replace("\n", " "); // Replace newlines with space
+        rawJson = System.Text.RegularExpressions.Regex.Replace(rawJson, @"\s+", " "); // Remove extra spaces
+        return rawJson.Trim();
+    }
 
 
 
