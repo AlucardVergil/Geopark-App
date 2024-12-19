@@ -104,7 +104,7 @@ public class BeaconScanner : MonoBehaviour
     }
 
 
-
+#if !UNITY_EDITOR
     // Update is called once per frame
     void Update()
     {
@@ -246,7 +246,7 @@ public class BeaconScanner : MonoBehaviour
         }
     }
 
-
+#endif
 
     void HandleUndetectedBeacons()
     {
