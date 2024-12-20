@@ -44,11 +44,16 @@ public class BeaconManager : MonoBehaviour
 
     public bool isEnglish = false;
 
+    public GameObject scannerPanel;
+
 
     void Start()
     {
+        Application.targetFrameRate = 30; // Or another preferred value
+
         fullScreenOverlay.SetActive(false);
 
+        scannerPanel.SetActive(false);
         landmarkDetails.SetActive(false);
         favoritesPanel.SetActive(false);
         infoPanel.SetActive(false);
@@ -105,7 +110,7 @@ public class BeaconManager : MonoBehaviour
         mapPanel.GetComponent<LandmarksSlideShowList>().InstantiateMapLandmarkSlides();
         mapPanel.GetComponent<LandmarksSlideShowList>().InstantiateMapLandmarkVerticalMapList();
 
-        mapPanel.SetActive(false);
+        //mapPanel.SetActive(false);
 
         loadingScreen.SetActive(false); // Hide loading screen after all downloads are complete
     }

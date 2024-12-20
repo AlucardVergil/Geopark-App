@@ -13,7 +13,7 @@ public class BeaconScanner : MonoBehaviour
 
 	private float _timeout = 0f;
 	private float _startScanTimeout = 10f;
-	private float _startScanDelay = 0.5f;
+	private float _startScanDelay = 5f;
 	private bool _startScan = true;
 	private Dictionary<string, BeaconScannerItem> _iBeaconItems;
 
@@ -34,8 +34,14 @@ public class BeaconScanner : MonoBehaviour
     // Use this for initialization
     void Start ()
 	{
+
         // Invoke every one sec until bluetooth and gps are opened
         InvokeRepeating(nameof(BLEScannerInitialize), 0f, 1f); // Start immediately, repeat every 1 second
+
+        InvokeRepeating(nameof(StartBLEScanner2), 0f, 1f); // Start immediately, repeat every 1 second
+
+        //InvokeRepeating(nameof(StartBLEScanner), 1f, 1f); // Start immediately, repeat every 1 second
+
     }
 
 
@@ -43,8 +49,13 @@ public class BeaconScanner : MonoBehaviour
 
     public void BLEScannerInitialize()
     {
+#if !UNITY_EDITOR
         isBluetoothEnabled = PermissionAndServiceChecker.IsBluetoothEnabled();
         isGPSEnabled = PermissionAndServiceChecker.IsGPSEnabled();
+#else
+        isBluetoothEnabled = true;
+        isGPSEnabled = true;
+#endif
 
         if (isBluetoothEnabled && isGPSEnabled)
         {
@@ -58,8 +69,8 @@ public class BeaconScanner : MonoBehaviour
             {
                 _timeout = _startScanDelay;
 
-                BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowLatency);
-                BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.High);
+                BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowPower);
+                BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.Balanced);
             },
             (error) =>
             {
@@ -76,6 +87,29 @@ public class BeaconScanner : MonoBehaviour
         }
     }
 
+
+
+    private void OnDisable()
+    {
+        // Stop scanning and process missing UUIDs
+        BluetoothLEHardwareInterface.StopScan();
+
+
+        if (_iBeaconItems == null) return;
+
+        // Compare detected UUIDs with existing items and clean up missing ones
+        var itemsToDestroy = _iBeaconItems.Keys.Except(detectedUUIDs).ToList();
+        foreach (var uuid in itemsToDestroy)
+        {
+            Destroy(_iBeaconItems[uuid].gameObject);
+            _iBeaconItems.Remove(uuid);
+        }
+
+        // Reset for the next scan
+        detectedUUIDs.Clear();
+        _startScan = true;
+        _timeout = _startScanDelay;
+    }
 
 
 
@@ -104,13 +138,29 @@ public class BeaconScanner : MonoBehaviour
     }
 
 
-#if !UNITY_EDITOR
-    // Update is called once per frame
-    void Update()
+    void StartBLEScanner2()
     {
         iBeaconUUIDs = _beaconManager.GetAllUUIDs();
 
         if (iBeaconUUIDs.Length == 1) return;
+
+        CancelInvoke(nameof(StartBLEScanner2));
+    }
+
+
+
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        //Debug.Log("FPS: " + (1.0f / Time.deltaTime));
+        //return;
+
+        //iBeaconUUIDs = _beaconManager.GetAllUUIDs();
+        //if (iBeaconUUIDs.Length == 1) return;
+
+        if (iBeaconUUIDs == null) return;
 
         if (_timeout > 0f)
         {
@@ -246,7 +296,7 @@ public class BeaconScanner : MonoBehaviour
         }
     }
 
-#endif
+
 
     void HandleUndetectedBeacons()
     {
