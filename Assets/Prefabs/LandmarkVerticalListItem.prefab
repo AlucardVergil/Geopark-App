@@ -135,8 +135,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 733364671d470374c8d97a22c9d3570a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UUID: 
   titleText: {fileID: 4022648683903451857}
+  greekTitle: 
+  englishTitle: 
 --- !u!1 &2243910528415565513
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,8 +306,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 40
-  m_fontSizeBase: 40
+  m_fontSize: 37
+  m_fontSizeBase: 37
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
