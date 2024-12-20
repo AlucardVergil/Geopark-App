@@ -113,6 +113,13 @@ public class BeaconScanner : MonoBehaviour
 
 
 
+    private void OnEnable()
+    {
+        _startScan = true;
+        _timeout = _startScanDelay;
+    }
+
+
     public float Distance (float signalPower, float rssi, float nValue)
 	{
 		return (float)Math.Pow (10, ((signalPower - rssi) / (10 * nValue)));
@@ -228,11 +235,11 @@ public class BeaconScanner : MonoBehaviour
                         // Handle new beacon
                         if (!_iBeaconItems.ContainsKey(UUID))
                         {
-                            BluetoothLEHardwareInterface.Log("item new: " + iBeaconData.UUID);
+                            //BluetoothLEHardwareInterface.Log("item new: " + iBeaconData.UUID);
                             var newItem = Instantiate(iBeaconItemPrefab);
                             if (newItem != null)
                             {
-                                BluetoothLEHardwareInterface.Log("item created: " + iBeaconData.UUID);
+                                //BluetoothLEHardwareInterface.Log("item created: " + iBeaconData.UUID);
                                 newItem.transform.SetParent(transform);
                                 newItem.transform.localScale = Vector3.one;
 
@@ -289,7 +296,7 @@ public class BeaconScanner : MonoBehaviour
 
                     // Reset for the next scan
                     detectedUUIDs.Clear();
-                    _startScan = true;
+                    //_startScan = true;
                     _timeout = _startScanDelay;
                 }
             }
