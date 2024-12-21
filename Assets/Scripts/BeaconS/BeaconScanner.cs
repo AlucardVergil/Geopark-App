@@ -12,8 +12,11 @@ public class BeaconScanner : MonoBehaviour
 	public GameObject iBeaconItemPrefab;
 
 	private float _timeout = 0f;
-	private float _startScanTimeout = 10f;
-	private float _startScanDelay = 5f;
+
+    [Header("Duration of Scan")]
+	[SerializeField] private float _startScanTimeout = 3f;
+    [Header("Delay between each scan cycle")]
+    [SerializeField] private float _startScanDelay = 10f;
 	private bool _startScan = true;
 	private Dictionary<string, BeaconScannerItem> _iBeaconItems;
 
@@ -22,7 +25,8 @@ public class BeaconScanner : MonoBehaviour
 	private BeaconManager _beaconManager;
 
     private Dictionary<string, float> _undetectedTimers; // Track undetected timers for each beacon
-    private float undetectedDelay = 1f; // Delay in seconds before destroying undetected beacons
+    [Header("Delay between each beacon detection before destroying gameobject")]
+    [SerializeField] private float undetectedDelay = 1f; // Delay in seconds before destroying undetected beacons // NOTE: doesn't exactly counts right bcz it executes once every few secs and subtracts deltatime
 
     private HashSet<string> detectedUUIDs = new HashSet<string>(); // Tracks currently detected UUIDs
 
@@ -259,17 +263,17 @@ public class BeaconScanner : MonoBehaviour
                             if (iBeaconItem.TextTitleFromUUID.text == "")
                                 iBeaconItem.TextTitleFromUUID.text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(UUID).Title : _beaconManager.GetBeaconDetails(UUID).TitleEnglish);
 
-                            iBeaconItem.TextRSSIValue.text = iBeaconData.RSSI.ToString();
+                            //iBeaconItem.TextRSSIValue.text = iBeaconData.RSSI.ToString();
 
-                            // Android returns the signal power or measured power, iOS hides this and there is no way to get it
-                            iBeaconItem.TextAndroidSignalPower.text = iBeaconData.AndroidSignalPower.ToString();
+                            //// Android returns the signal power or measured power, iOS hides this and there is no way to get it
+                            //iBeaconItem.TextAndroidSignalPower.text = iBeaconData.AndroidSignalPower.ToString();
 
-                            // iOS returns an enum of unknown, far, near, immediate, Android does not return this
-                            iBeaconItem.TextiOSProximity.text = iBeaconData.iOSProximity.ToString();
+                            //// iOS returns an enum of unknown, far, near, immediate, Android does not return this
+                            //iBeaconItem.TextiOSProximity.text = iBeaconData.iOSProximity.ToString();
 
-                            // we can only calculate a distance if we have the signal power which iOS does not provide
-                            if (iBeaconData.AndroidSignalPower != 0)
-                                iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
+                            //// we can only calculate a distance if we have the signal power which iOS does not provide
+                            //if (iBeaconData.AndroidSignalPower != 0)
+                            //    iBeaconItem.TextDistance.text = Distance(iBeaconData.AndroidSignalPower, iBeaconData.RSSI, 2.5f).ToString();
 
                             if (iBeaconItem.GetComponent<Image>().sprite == null)
                                 iBeaconItem.GetComponent<Image>().sprite = _beaconManager.GetBeaconDetails(UUID).ImageSprite;
