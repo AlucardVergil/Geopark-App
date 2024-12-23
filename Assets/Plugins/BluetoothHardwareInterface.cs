@@ -21,7 +21,6 @@ you have lost work becausee of this problem. This is experimental only. Use at
 your own risk.
 
 */
-
 using UnityEngine;
 using System;
 using System.Runtime.InteropServices;
@@ -34,8 +33,13 @@ using UnityEngine.Android;
 #endif
 #endif
 
+
+
 public class BluetoothLEHardwareInterface
 {
+    public static bool permissionsGranted = false;
+    
+		
 	public enum CBCharacteristicProperties
 	{
 		CBCharacteristicPropertyBroadcast = 0x01,
@@ -296,7 +300,7 @@ public class BluetoothLEHardwareInterface
 		bool locationAsked = false;
 		bool connectAsked = false;
         bool cameraPermissionAsked = false;
-        bool permissionsGranted = false;
+        permissionsGranted = false;
 		float timerValue = 0f;
 
 		while (timerValue < 5f)
@@ -317,7 +321,7 @@ public class BluetoothLEHardwareInterface
 					if (!locationAsked)
 					{
 						Permission.RequestUserPermission("android.permission.ACCESS_FINE_LOCATION");
-                        locationAsked = false;
+                        locationAsked = true;
 						timerValue = 2;
 					}
 				}
@@ -328,7 +332,7 @@ public class BluetoothLEHardwareInterface
 						if (!connectAsked)
 						{
 							Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
-							connectAsked = false;
+							connectAsked = true;
 							timerValue = 2;
 						}
 					}
@@ -340,7 +344,7 @@ public class BluetoothLEHardwareInterface
                             {
                                 Permission.RequestUserPermission("android.permission.CAMERA");
                                 cameraPermissionAsked = true;
-                                timerValue = 0; // Reset the timer to wait for the user's response
+                                timerValue = 2; // Reset the timer to wait for the user's response
                             }
                         }
                         else
@@ -364,7 +368,7 @@ public class BluetoothLEHardwareInterface
         }
 		else
 		{
-			if (afterPermissionAction != null)
+            if (afterPermissionAction != null)
 				afterPermissionAction();
 		}
     }

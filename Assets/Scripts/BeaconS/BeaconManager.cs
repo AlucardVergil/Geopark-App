@@ -9,6 +9,7 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
+
 public class BeaconManager : MonoBehaviour
 {
     [HideInInspector] public BeaconDetailsList beaconDetailsList; // Stores the list of beacon details
@@ -66,6 +67,36 @@ public class BeaconManager : MonoBehaviour
 
         // Start downloading the JSON file; if it fails, load the local copy
         StartCoroutine(TryDownloadOrLoadLocalJSON());
+
+
+//#if UNITY_EDITOR
+//        // Start downloading the JSON file; if it fails, load the local copy
+//        StartCoroutine(TryDownloadOrLoadLocalJSON());
+//#else
+//        StartCoroutine(StartBeaconManager());
+//#endif
+
+        scannerPanel.GetComponentInChildren<BeaconScanner>().StartBLEScannerInitialize();
+    }
+
+
+
+    public IEnumerator StartBeaconManager()
+    {
+        float timer = 15f;
+
+        while (!BluetoothLEHardwareInterface.permissionsGranted || timer <= 0f)
+        {
+            if (BluetoothLEHardwareInterface.permissionsGranted)
+            {
+                // Start downloading the JSON file; if it fails, load the local copy
+                StartCoroutine(TryDownloadOrLoadLocalJSON());
+            }
+            
+            timer -= 0.5f;
+            yield return new WaitForSeconds(0.5f);
+        }
+        
     }
 
 
@@ -112,7 +143,7 @@ public class BeaconManager : MonoBehaviour
 
         //mapPanel.SetActive(false);
 
-        loadingScreen.SetActive(false); // Hide loading screen after all downloads are complete
+        loadingScreen.SetActive(false); // Hide loading screen after all downloads are complete        
     }
 
     private void LoadBeaconData(string json)
