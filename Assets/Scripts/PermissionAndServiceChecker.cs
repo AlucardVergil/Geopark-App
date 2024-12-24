@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Android;
@@ -41,6 +42,76 @@ public class PermissionAndServiceChecker : MonoBehaviour
             Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
         }
 #endif
+
+        StartCoroutine(CheckPermissions2());
+    }
+
+
+
+    IEnumerator CheckPermissions2()
+    {
+        bool scanAsked = false;
+        bool locationAsked = false;
+        bool connectAsked = false;
+        bool cameraPermissionAsked = false;
+        float timerValue = 0f;
+
+        while (timerValue < 15f)
+        {
+            if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_SCAN"))
+            {
+                if (!scanAsked)
+                {
+                    Permission.RequestUserPermission("android.permission.BLUETOOTH_SCAN");
+                    scanAsked = true;
+                    timerValue = 0;
+                }
+            }
+            else
+            {
+                if (!Permission.HasUserAuthorizedPermission("android.permission.ACCESS_FINE_LOCATION"))
+                {
+                    if (!locationAsked)
+                    {
+                        Permission.RequestUserPermission("android.permission.ACCESS_FINE_LOCATION");
+                        locationAsked = true;
+                        timerValue = 2;
+                    }
+                }
+                else
+                {
+                    if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_CONNECT"))
+                    {
+                        if (!connectAsked)
+                        {
+                            Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
+                            connectAsked = true;
+                            timerValue = 2;
+                        }
+                    }
+                    else
+                    {
+                        if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
+                        {
+                            if (!cameraPermissionAsked)
+                            {
+                                Permission.RequestUserPermission("android.permission.CAMERA");
+                                cameraPermissionAsked = true;
+                                timerValue = 2; // Reset the timer to wait for the user's response
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            timerValue += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
 

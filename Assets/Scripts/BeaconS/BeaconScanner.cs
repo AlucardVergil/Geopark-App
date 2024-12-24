@@ -137,7 +137,7 @@ public class BeaconScanner : MonoBehaviour
             {
                 _timeout = _startScanDelay;
 
-                BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.LowPower);
+                BluetoothLEHardwareInterface.BluetoothScanMode(BluetoothLEHardwareInterface.ScanMode.Balanced);
                 BluetoothLEHardwareInterface.BluetoothConnectionPriority(BluetoothLEHardwareInterface.ConnectionPriority.Balanced);
             },
             (error) =>
@@ -185,7 +185,7 @@ public class BeaconScanner : MonoBehaviour
     {
         _startScan = true;
         _timeout = _startScanDelay;
-        currentBatchIndex = 0;
+        //currentBatchIndex = 0;
     }
 
 
@@ -220,10 +220,10 @@ public class BeaconScanner : MonoBehaviour
 
         if (iBeaconUUIDs.Length == 1) return;
 
-        maxBatchIndex = (iBeaconUUIDs.Length / batchSize) - 1;
-        Debug.Log("max " + maxBatchIndex);
+        //maxBatchIndex = (iBeaconUUIDs.Length / batchSize) - 1;
+        //Debug.Log("max " + maxBatchIndex);
 
-        uuidsBatches = SplitIntoBatches(iBeaconUUIDs, batchSize);
+        //uuidsBatches = SplitIntoBatches(iBeaconUUIDs, batchSize);
 
         CancelInvoke(nameof(StartBLEScanner2));
     }

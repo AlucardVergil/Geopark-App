@@ -88,11 +88,11 @@ public class LanguageSwitch : MonoBehaviour
         parkingService.text = (isEnglish ? "Parking" : "Χώρος Στάθμευσης");
         walkingService.text = (isEnglish ? "Walking" : "Περπάτημα");
 
-        startingPanelTitle.text = (isEnglish ? "Geopark Grevena - Kozani" : "Γεωπάρκο Γρεβενών - Κοζάνης");
-        startingPanelText.text = (isEnglish ? "Please enable GPS and Bluetooth in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το GPS και τα Bluetooth για να λειτουργεί ο σαρωτής πομπών.");
+        startingPanelTitle.text = (isEnglish ? "<b>Geopark</b>\nGrevena - Kozani" : "<b>Γεωπάρκο</b>\nΓρεβενών - Κοζάνης");
+        startingPanelText.text = (isEnglish ? "Please enable <b>GPS</b> and <b>Bluetooth</b> in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το <b>GPS</b> και τα <b>Bluetooth</b> για να λειτουργεί ο σαρωτής πομπών.");
 
 #if !UNITY_EDITOR
-        warningText.text = (isEnglish ? "Please enable Bluetooth & GPS in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το GPS και τα Bluetooth, για να λειτουργήσει ο σαρωτής πομπών.");
+        warningText.text = (isEnglish ? "Please enable <b>Bluetooth</b> & <b>GPS</b> in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το <b>GPS</b> και τα <b>Bluetooth</b>, για να λειτουργήσει ο σαρωτής πομπών.");
         openSettingsButtonText.text = (isEnglish ? "Open Settings" : "’νοιγμα Ρυθμίσεων");
 #endif
     }
