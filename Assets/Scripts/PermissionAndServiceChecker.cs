@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Android;
+using UnityEngine.UIElements;
 
 public class PermissionAndServiceChecker : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
     bool isBluetoothEnabled = false;
     bool isGPSEnabled = false;
+
+    public GameObject QRCodeScanner;
+
 
 
     void Start()
@@ -30,10 +34,10 @@ public class PermissionAndServiceChecker : MonoBehaviour
     void CheckPermissions()
     {
         // Request Location permission
-        if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
-        {
-            Permission.RequestUserPermission(Permission.FineLocation);
-        }
+        //if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+        //{
+        //    Permission.RequestUserPermission(Permission.FineLocation);
+        //}
 
         // Request Bluetooth permissions (Android 12+)
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -52,66 +56,71 @@ public class PermissionAndServiceChecker : MonoBehaviour
     {
         bool scanAsked = false;
         bool locationAsked = false;
-        bool connectAsked = false;
-        bool cameraPermissionAsked = false;
-        float timerValue = 0f;
+        bool connectAsked = false;        
 
-        while (timerValue < 15f)
+
+        if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_SCAN"))
         {
-            if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_SCAN"))
+            if (!scanAsked)
             {
-                if (!scanAsked)
-                {
-                    Permission.RequestUserPermission("android.permission.BLUETOOTH_SCAN");
-                    scanAsked = true;
-                    timerValue = 0;
-                }
+                Permission.RequestUserPermission("android.permission.BLUETOOTH_SCAN");
+                scanAsked = true;
             }
-            else
-            {
-                if (!Permission.HasUserAuthorizedPermission("android.permission.ACCESS_FINE_LOCATION"))
-                {
-                    if (!locationAsked)
-                    {
-                        Permission.RequestUserPermission("android.permission.ACCESS_FINE_LOCATION");
-                        locationAsked = true;
-                        timerValue = 2;
-                    }
-                }
-                else
-                {
-                    if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_CONNECT"))
-                    {
-                        if (!connectAsked)
-                        {
-                            Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
-                            connectAsked = true;
-                            timerValue = 2;
-                        }
-                    }
-                    else
-                    {
-                        if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
-                        {
-                            if (!cameraPermissionAsked)
-                            {
-                                Permission.RequestUserPermission("android.permission.CAMERA");
-                                cameraPermissionAsked = true;
-                                timerValue = 2; // Reset the timer to wait for the user's response
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            timerValue += Time.deltaTime;
-
-            yield return new WaitForEndOfFrame();
         }
+
+
+        yield return new WaitUntil(() => scanAsked);
+
+        if (!Permission.HasUserAuthorizedPermission("android.permission.ACCESS_FINE_LOCATION"))
+        {
+            if (!locationAsked)
+            {
+                Permission.RequestUserPermission("android.permission.ACCESS_FINE_LOCATION");
+                locationAsked = true;
+            }
+        }
+
+        yield return new WaitUntil(() => locationAsked);
+
+
+        if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_CONNECT"))
+        {
+            if (!connectAsked)
+            {
+                Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
+                connectAsked = true;
+            }
+        }
+
+        yield return new WaitUntil(() => connectAsked);        
+    }
+
+
+    public void AskCameraPermission()
+    {
+        StartCoroutine(AskCameraPermissionAndEnableScanner());
+    }
+
+
+    IEnumerator AskCameraPermissionAndEnableScanner()
+    {
+        bool cameraPermissionAsked = false;
+
+        if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
+        {
+            if (!cameraPermissionAsked)
+            {
+                Permission.RequestUserPermission("android.permission.CAMERA");
+                cameraPermissionAsked = true;
+            }
+        }
+
+        yield return new WaitUntil(() => Permission.HasUserAuthorizedPermission("android.permission.CAMERA"));
+
+        yield return new WaitForSeconds(1f);    
+
+        QRCodeScanner.SetActive(true);
+        GetComponent<QR_Codes>().enabled = true;
     }
 
 

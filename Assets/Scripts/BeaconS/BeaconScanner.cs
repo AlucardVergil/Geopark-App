@@ -326,10 +326,10 @@ public class BeaconScanner : MonoBehaviour
                     // Stop scanning and process missing UUIDs
                     BluetoothLEHardwareInterface.StopScan();
 
-                    currentBatchIndex++;
+                    //currentBatchIndex++;
 
-                    if (currentBatchIndex > maxBatchIndex)
-                        currentBatchIndex = 0;
+                    //if (currentBatchIndex > maxBatchIndex)
+                    //    currentBatchIndex = 0;
 
                     //debugtext.text = "Index: " + currentBatchIndex;
 

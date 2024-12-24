@@ -2302,6 +2302,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1975677152}
+        m_TargetAssemblyTypeName: PermissionAndServiceChecker, Assembly-CSharp
+        m_MethodName: AskCameraPermission
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
       - m_Target: {fileID: 1827634674}
         m_TargetAssemblyTypeName: SidePanelController, Assembly-CSharp
         m_MethodName: TogglePanel
@@ -2313,30 +2325,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 939196460}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 1975677153}
-        m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
-        m_MethodName: set_enabled
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
         m_CallState: 2
 --- !u!114 &167598252
 MonoBehaviour:
@@ -24848,8 +24836,6 @@ MonoBehaviour:
   _startScanTimeout: 10
   _startScanDelay: 2
   undetectedDelay: 5
-  debugtext: {fileID: 1463938142}
-  debugtext2: {fileID: 762330477}
 --- !u!114 &1393834998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34220,6 +34206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   warningPanel: {fileID: 847822185}
+  QRCodeScanner: {fileID: 939196460}
 --- !u!114 &1975677153
 MonoBehaviour:
   m_ObjectHideFlags: 0
