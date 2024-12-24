@@ -51,6 +51,7 @@ public class BeaconScanner : MonoBehaviour
 
         //InvokeRepeating(nameof(StartBLEScanner), 1f, 1f); // Start immediately, repeat every 1 second
 
+        StartBLEScannerInitialize();
     }
 
 

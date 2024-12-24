@@ -113,11 +113,11 @@ public class PermissionAndServiceChecker : MonoBehaviour
                 Permission.RequestUserPermission("android.permission.CAMERA");
                 cameraPermissionAsked = true;
             }
+
+            yield return new WaitUntil(() => Permission.HasUserAuthorizedPermission("android.permission.CAMERA"));            
         }
 
-        yield return new WaitUntil(() => Permission.HasUserAuthorizedPermission("android.permission.CAMERA"));
-
-        yield return new WaitForSeconds(1f);    
+        yield return new WaitForSeconds(0.2f);
 
         QRCodeScanner.SetActive(true);
         GetComponent<QR_Codes>().enabled = true;

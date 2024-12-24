@@ -79,7 +79,7 @@ public class BeaconManager : MonoBehaviour
 
         beaconMainSpriteDictionary = new Dictionary<string, Sprite>();
 
-        scannerPanel.GetComponentInChildren<BeaconScanner>().StartBLEScannerInitialize();
+        //scannerPanel.GetComponentInChildren<BeaconScanner>().StartBLEScannerInitialize();
     }
 
 
