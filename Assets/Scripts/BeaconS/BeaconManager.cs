@@ -354,10 +354,15 @@ public class BeaconManager : MonoBehaviour
 
         var beacon = beaconDetailsDictionary[uuid];
 
-        details = beacon;
+        details = beacon; /////////////// NOTE check if don't need details.
 
         // Clear any previously loaded gallery sprites to avoid duplicates
-        details.GallerySprites.Clear();
+        //beacon.GallerySprites.Clear();
+        Debug.Log("Count " + beacon.GallerySprites.Count + " Count 2" + beacon.GalleryImages.Count);
+
+        if (beacon.GallerySprites.Count == beacon.GalleryImages.Count)
+            return beacon;
+
 
         // Load gallery images
         for (int i = 0; i < beacon.GalleryImages.Count; i++)
@@ -377,7 +382,7 @@ public class BeaconManager : MonoBehaviour
                     new Vector2(0.5f, 0.5f)
                 );
 
-                details.GallerySprites.Add(gallerySprite);
+                beacon.GallerySprites.Add(gallerySprite);
             }
             else
             {
@@ -386,12 +391,12 @@ public class BeaconManager : MonoBehaviour
         }
 
 
-        if (details == null)
+        if (beacon == null)
         {
             Debug.LogError($"No beacon found with UUID: {uuid}");
         }
 
-        return details;
+        return beacon;
     }
 
 
