@@ -14,6 +14,7 @@ public class BeaconManager : MonoBehaviour
 {
     [HideInInspector] public BeaconDetailsList beaconDetailsList; // Stores the list of beacon details
     private Dictionary<string, BeaconDetails> beaconDetailsDictionary; // Dictionary for quick lookup
+    private Dictionary<string, Sprite> beaconMainSpriteDictionary; // Dictionary for quick lookup
 
     public GameObject landmarkDetails;
     public GameObject loadingScreen;
@@ -69,12 +70,14 @@ public class BeaconManager : MonoBehaviour
         StartCoroutine(TryDownloadOrLoadLocalJSON());
 
 
-//#if UNITY_EDITOR
-//        // Start downloading the JSON file; if it fails, load the local copy
-//        StartCoroutine(TryDownloadOrLoadLocalJSON());
-//#else
-//        StartCoroutine(StartBeaconManager());
-//#endif
+        //#if UNITY_EDITOR
+        //        // Start downloading the JSON file; if it fails, load the local copy
+        //        StartCoroutine(TryDownloadOrLoadLocalJSON());
+        //#else
+        //        StartCoroutine(StartBeaconManager());
+        //#endif
+
+        beaconMainSpriteDictionary = new Dictionary<string, Sprite>();
 
         scannerPanel.GetComponentInChildren<BeaconScanner>().StartBLEScannerInitialize();
     }
@@ -116,7 +119,7 @@ public class BeaconManager : MonoBehaviour
             Debug.Log("Downloaded JSON and saved to: " + localFilePath);
 
             LoadBeaconData(json);
-                      
+
             yield return StartCoroutine(DownloadImages());
             yield return StartCoroutine(DownloadVideos());
         }
@@ -157,7 +160,7 @@ public class BeaconManager : MonoBehaviour
         foreach (var beacon in beaconDetailsList.Beacons)
         {
             beaconDetailsDictionary[beacon.UUID] = beacon;
-        }
+        }        
 
         totalFiles = beaconDetailsList.Beacons.Count + beaconDetailsList.Beacons.Sum(b => b.GalleryImages.Count + b.VideoURLs.Count);
 
@@ -204,9 +207,9 @@ public class BeaconManager : MonoBehaviour
     {
         //HashSet<string> validFiles = new HashSet<string>();
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        foreach (var beacon in beaconDetailsDictionary)
         {
-            string mainImageID = ExtractUniqueID(beacon.ImageURL);
+            string mainImageID = ExtractUniqueID(beacon.Value.ImageURL);
 
             // Download the main image
             string mainImagePath = Path.Combine(Application.persistentDataPath, $"{mainImageID}.png");
@@ -214,29 +217,29 @@ public class BeaconManager : MonoBehaviour
 
             if (!File.Exists(mainImagePath))
             {
-                yield return StartCoroutine(DownloadImage(beacon.ImageURL, mainImagePath, sprite =>
+                yield return StartCoroutine(DownloadImage(beacon.Value.ImageURL, mainImagePath, sprite =>
                 {
-                    beacon.ImageSprite = sprite;
-                    Debug.Log($"Downloaded main image for UUID {beacon.UUID}");
+                    beacon.Value.ImageSprite = sprite;
+                    Debug.Log($"Downloaded main image for UUID {beacon.Value.UUID}");
                 }));
                 filesDownloaded++;
                 UpdateProgressBar(filesDownloaded, totalFiles);
             }
 
             // Download gallery images
-            for (int i = 0; i < beacon.GalleryImages.Count; i++)
+            for (int i = 0; i < beacon.Value.GalleryImages.Count; i++)
             {
-                string galleryImageID = ExtractUniqueID(beacon.GalleryImages[i]);
+                string galleryImageID = ExtractUniqueID(beacon.Value.GalleryImages[i]);
                 string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{galleryImageID}.png");
                 validFiles.Add(galleryImageID + ".png");
 
                 if (!File.Exists(galleryImagePath))
                 {
-                    string galleryImageUrl = beacon.GalleryImages[i];
+                    string galleryImageUrl = beacon.Value.GalleryImages[i];
                     yield return StartCoroutine(DownloadImage(galleryImageUrl, galleryImagePath, sprite =>
                     {
-                        beacon.GallerySprites.Add(sprite);
-                        Debug.Log($"Downloaded gallery image {i + 1} for UUID {beacon.UUID}");
+                        beacon.Value.GallerySprites.Add(sprite);
+                        Debug.Log($"Downloaded gallery image {i + 1} for UUID {beacon.Value.UUID}");
                     }));
                     filesDownloaded++;
                     UpdateProgressBar(filesDownloaded, totalFiles);
@@ -300,36 +303,39 @@ public class BeaconManager : MonoBehaviour
     {
         BeaconDetails details = null;
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        var beacon = beaconDetailsDictionary[uuid];
+
+        details = beacon;
+
+        if (beaconMainSpriteDictionary.ContainsKey(uuid))
         {
-            if (beacon.UUID == uuid)
-            {
-                details = beacon;
-
-                string mainImageID = ExtractUniqueID(beacon.ImageURL);
-
-                // Load the main image
-                string mainImagePath = Path.Combine(Application.persistentDataPath, $"{mainImageID}.png");
-                if (File.Exists(mainImagePath))
-                {
-                    byte[] imageData = File.ReadAllBytes(mainImagePath);
-                    Texture2D texture = new Texture2D(2, 2);
-                    texture.LoadImage(imageData);
-
-                    details.ImageSprite = Sprite.Create(
-                        texture,
-                        new Rect(0, 0, texture.width, texture.height),
-                        new Vector2(0.5f, 0.5f)
-                    );
-                }
-                else
-                {
-                    Debug.LogWarning($"Main image for UUID {uuid} not found locally.");
-                }                
-
-                break;
-            }
+            details.ImageSprite = beaconMainSpriteDictionary[uuid];
         }
+        else
+        {
+            string mainImageID = ExtractUniqueID(beacon.ImageURL);
+
+            // Load the main image
+            string mainImagePath = Path.Combine(Application.persistentDataPath, $"{mainImageID}.png");
+            if (File.Exists(mainImagePath))
+            {
+                byte[] imageData = File.ReadAllBytes(mainImagePath);
+                Texture2D texture = new Texture2D(2, 2);
+                texture.LoadImage(imageData);
+
+                beaconMainSpriteDictionary[uuid] = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+
+                details.ImageSprite = beaconMainSpriteDictionary[uuid];
+            }
+            else
+            {
+                Debug.LogWarning($"Main image for UUID {uuid} not found locally.");
+            }
+        }        
 
         if (details == null)
         {
@@ -346,44 +352,39 @@ public class BeaconManager : MonoBehaviour
     {
         BeaconDetails details = null;
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        var beacon = beaconDetailsDictionary[uuid];
+
+        details = beacon;
+
+        // Clear any previously loaded gallery sprites to avoid duplicates
+        details.GallerySprites.Clear();
+
+        // Load gallery images
+        for (int i = 0; i < beacon.GalleryImages.Count; i++)
         {
-            if (beacon.UUID == uuid)
+            string galleryImageID = ExtractUniqueID(beacon.GalleryImages[i]);
+
+            string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{galleryImageID}.png");
+            if (File.Exists(galleryImagePath))
             {
-                details = beacon;                
+                byte[] imageData = File.ReadAllBytes(galleryImagePath);
+                Texture2D texture = new Texture2D(2, 2);
+                texture.LoadImage(imageData);
 
-                // Clear any previously loaded gallery sprites to avoid duplicates
-                details.GallerySprites.Clear();
-                
-                // Load gallery images
-                for (int i = 0; i < beacon.GalleryImages.Count; i++)
-                {
-                    string galleryImageID = ExtractUniqueID(beacon.GalleryImages[i]);
+                Sprite gallerySprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
 
-                    string galleryImagePath = Path.Combine(Application.persistentDataPath, $"{galleryImageID}.png");
-                    if (File.Exists(galleryImagePath))
-                    {
-                        byte[] imageData = File.ReadAllBytes(galleryImagePath);
-                        Texture2D texture = new Texture2D(2, 2);
-                        texture.LoadImage(imageData);
-
-                        Sprite gallerySprite = Sprite.Create(
-                            texture,
-                            new Rect(0, 0, texture.width, texture.height),
-                            new Vector2(0.5f, 0.5f)
-                        );
-
-                        details.GallerySprites.Add(gallerySprite);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Gallery image {i + 1} for UUID {uuid} not found locally.");
-                    }
-                }
-
-                break;
+                details.GallerySprites.Add(gallerySprite);
+            }
+            else
+            {
+                Debug.LogWarning($"Gallery image {i + 1} for UUID {uuid} not found locally.");
             }
         }
+
 
         if (details == null)
         {
@@ -400,9 +401,9 @@ public class BeaconManager : MonoBehaviour
     {
         List<string> uuidsList = new List<string>();
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        foreach (var beacon in beaconDetailsDictionary)
         {
-            uuidsList.Add(beacon.UUID.ToUpper() + ":Pit01");
+            uuidsList.Add(beacon.Value.UUID.ToUpper() + ":Pit01");
         }
 
         return uuidsList.ToArray();
@@ -414,9 +415,9 @@ public class BeaconManager : MonoBehaviour
     {
         List<string> uuidsList = new List<string>();
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        foreach (var beacon in beaconDetailsDictionary)
         {
-            uuidsList.Add(beacon.UUID.ToLower());
+            uuidsList.Add(beacon.Value.UUID.ToLower());
         }
 
         return uuidsList.ToArray();
@@ -427,17 +428,17 @@ public class BeaconManager : MonoBehaviour
     private IEnumerator DownloadVideos()
     {
 
-        foreach (var beacon in beaconDetailsList.Beacons)
+        foreach (var beacon in beaconDetailsDictionary)
         {
-            for (int i = 0; i < beacon.VideoURLs.Count; i++)
+            for (int i = 0; i < beacon.Value.VideoURLs.Count; i++)
             {
-                string videoID = ExtractUniqueID(beacon.VideoURLs[i]);
+                string videoID = ExtractUniqueID(beacon.Value.VideoURLs[i]);
                 string videoPath = Path.Combine(Application.persistentDataPath, $"{videoID}.mp4");
                 validFiles.Add(videoID + ".mp4");                
 
                 if (!File.Exists(videoPath))
                 {
-                    string videoUrl = beacon.VideoURLs[i];
+                    string videoUrl = beacon.Value.VideoURLs[i];
                     using (UnityWebRequest request = UnityWebRequest.Get(videoUrl))
                     {
                         request.downloadHandler = new DownloadHandlerFile(videoPath);
@@ -445,11 +446,11 @@ public class BeaconManager : MonoBehaviour
 
                         if (request.result == UnityWebRequest.Result.Success)
                         {
-                            Debug.Log($"Downloaded video {i + 1} for UUID {beacon.UUID}");
+                            Debug.Log($"Downloaded video {i + 1} for UUID {beacon.Value.UUID}");
                         }
                         else
                         {
-                            Debug.LogError($"Failed to download video {i + 1} for UUID {beacon.UUID}: {request.error}");
+                            Debug.LogError($"Failed to download video {i + 1} for UUID {beacon.Value.UUID}: {request.error}");
                         }
                     }
                 }
@@ -485,13 +486,11 @@ public class BeaconManager : MonoBehaviour
         {
             string videoID = "";
 
-            foreach (var beacon in beaconDetailsList.Beacons)
-            {
-                if (beacon.UUID == uuid)
-                    videoID = ExtractUniqueID(beacon.VideoURLs[videoIndex]);
-            }
+            var beacon = beaconDetailsDictionary[uuid];
 
-                    
+            videoID = ExtractUniqueID(beacon.VideoURLs[videoIndex]);
+
+
             string videoPath = Path.Combine(Application.persistentDataPath, $"{videoID}.mp4");
 
             if (File.Exists(videoPath))

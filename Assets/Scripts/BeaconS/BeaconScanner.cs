@@ -315,7 +315,7 @@ public class BeaconScanner : MonoBehaviour
                     //}
 
                     // scanning for iBeacon devices requires that you know the Proximity UUID and provide an Identifier
-                    BluetoothLEHardwareInterface.ScanForBeacons(new string [] { "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0:Pit01"}, (iBeaconData) =>
+                    BluetoothLEHardwareInterface.ScanForBeacons(iBeaconUUIDs, (iBeaconData) =>
                     {
                         string UUID = FormatUUID(iBeaconData.UUID.ToLower());
 
