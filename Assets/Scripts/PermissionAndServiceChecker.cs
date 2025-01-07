@@ -24,7 +24,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
         CheckPermissions();
 
         // Check Bluetooth and GPS status
-        CheckBluetoothAndGPS();
+        //CheckBluetoothAndGPS();
 #endif
     }
 
@@ -126,10 +126,10 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
 
 
-    void CheckBluetoothAndGPS()
+    public void CheckBluetoothAndGPS()
     {
 
-#if UNITY_ANDROID
+#if UNITY_ANDROID && !UNITY_EDITOR
         isBluetoothEnabled = IsBluetoothEnabled();
         isGPSEnabled = IsGPSEnabled();
 

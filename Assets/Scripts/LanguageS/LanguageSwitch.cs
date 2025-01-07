@@ -42,6 +42,7 @@ public class LanguageSwitch : MonoBehaviour
     [Header("Starting Panels Texts")]
     public TMP_Text startingPanelTitle;
     public TMP_Text startingPanelText;
+    public TMP_Text startingNextButton;
 
     [Header("Bluetooth & GPS Disabled Warning Panel")]
     public TMP_Text warningText;
@@ -91,6 +92,9 @@ public class LanguageSwitch : MonoBehaviour
         startingPanelTitle.text = (isEnglish ? "<b>Geopark</b>\nGrevena - Kozani" : "<b>Γεωπάρκο</b>\nΓρεβενών - Κοζάνης");
         startingPanelText.text = (isEnglish ? "Please enable <b>GPS</b> and <b>Bluetooth</b> in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το <b>GPS</b> και τα <b>Bluetooth</b> για να λειτουργεί ο σαρωτής πομπών.");
 
+        startingNextButton.text = (isEnglish ? "Next" : "Επόμενο");
+
+
 #if !UNITY_EDITOR
         warningText.text = (isEnglish ? "Please enable <b>Bluetooth</b> & <b>GPS</b> in order for the beacon scanner to work." : "Παρακαλώ ανοίξτε το <b>GPS</b> και τα <b>Bluetooth</b>, για να λειτουργήσει ο σαρωτής πομπών.");
         openSettingsButtonText.text = (isEnglish ? "Open Settings" : "’νοιγμα Ρυθμίσεων");
@@ -114,7 +118,6 @@ public class LanguageSwitch : MonoBehaviour
         }
 
         ChangeTextsLanguage(_beaconManager.isEnglish);
-
     }
 
 
