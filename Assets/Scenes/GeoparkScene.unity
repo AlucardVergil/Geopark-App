@@ -21758,8 +21758,8 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1971139653}
         m_TargetAssemblyTypeName: HorizontalSlideshow, Assembly-CSharp
-        m_MethodName: SnapToPanel
-        m_Mode: 3
+        m_MethodName: ResetAndSnapToPanel
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

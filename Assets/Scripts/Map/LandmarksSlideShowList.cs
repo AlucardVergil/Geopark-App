@@ -70,7 +70,7 @@ public class LandmarksSlideShowList : MonoBehaviour
                 newItem.GetComponentInChildren<TMP_Text>().text = (!_beaconManager.isEnglish ? _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).Title : _beaconManager.GetBeaconDetails(landmarkUUIDs[i]).TitleEnglish);
 
                 // Create a local copy of the index
-                /*When the onClick listener is assigned inside the loop, the lambda captures the variable i by reference, not its value at the time of the loop. 
+                /* When the onClick listener is assigned inside the loop, the lambda captures the variable i by reference, not its value at the time of the loop. 
                 As a result, when the listener executes, it uses the last value of i after the loop finishes.
                 To fix this, I created a local copy of the i variable inside the loop. */
                 int index = i;

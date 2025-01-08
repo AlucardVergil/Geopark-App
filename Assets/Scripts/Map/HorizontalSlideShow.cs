@@ -74,6 +74,17 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
         SnapToPanel(currentPanelIndex);
     }
 
+
+    public void ResetAndSnapToPanel()
+    {
+        currentPanelIndex = 0;
+
+        SnapToPanel(0);
+    }
+
+
+
+
     public void SnapToPanel(int index)
     {
         // Hide left button when reaching 1st panel

@@ -19,7 +19,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
     void Start()
     {
         warningPanel.SetActive(false);
-#if !UNITY_EDITOR && UNITY_ANDROID
+#if !UNITY_EDITOR
         // Check and request permissions
         CheckPermissions();
 
@@ -45,14 +45,14 @@ public class PermissionAndServiceChecker : MonoBehaviour
         {
             Permission.RequestUserPermission("android.permission.BLUETOOTH_CONNECT");
         }
-#endif
 
-        StartCoroutine(CheckPermissions2());
+        StartCoroutine(CheckPermissionsAndroid());
+#endif
     }
 
 
 
-    IEnumerator CheckPermissions2()
+    IEnumerator CheckPermissionsAndroid()
     {
         bool scanAsked = false;
         bool locationAsked = false;
@@ -96,13 +96,50 @@ public class PermissionAndServiceChecker : MonoBehaviour
     }
 
 
+
+    //IEnumerator CheckPermissionsiOS()
+    //{
+    //    bool cameraAsked = false;
+    //    bool locationAsked = false;
+
+    //    // Check and request Camera Permission
+    //    if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+    //    {
+    //        if (!cameraAsked)
+    //        {
+    //            Application.RequestUserAuthorization(UserAuthorization.WebCam);
+    //            cameraAsked = true;
+    //        }
+    //    }
+
+    //    yield return new WaitUntil(() => cameraAsked);
+
+    //    // Check and request Location Permission
+    //    if (!Application.HasUserAuthorization(UserAuthorization.Location))
+    //    {
+    //        if (!locationAsked)
+    //        {
+    //            Application.RequestUserAuthorization(UserAuthorization.Location);
+    //            locationAsked = true;
+    //        }
+    //    }
+
+    //    yield return new WaitUntil(() => locationAsked);
+
+    //    // Bluetooth permissions must be handled natively
+    //    Debug.Log("For Bluetooth permissions, additional setup is required.");
+    //}
+
+
     public void AskCameraPermission()
     {
-        StartCoroutine(AskCameraPermissionAndEnableScanner());
+#if UNITY_ANDROID && !UNITY_EDITOR
+        StartCoroutine(AskCameraPermissionAndEnableScannerAndroid());
+#endif
     }
 
 
-    IEnumerator AskCameraPermissionAndEnableScanner()
+    IEnumerator AskCameraPermissionAndEnableScannerAndroid()
     {
         bool cameraPermissionAsked = false;
 
