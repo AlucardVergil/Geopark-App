@@ -19,7 +19,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
     void Start()
     {
         warningPanel.SetActive(false);
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && UNITY_ANDROID
         // Check and request permissions
         CheckPermissions();
 
