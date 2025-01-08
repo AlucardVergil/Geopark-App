@@ -338,22 +338,25 @@ public class BluetoothLEHardwareInterface
 					}
 					else
 					{
-						if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
-						{
-							if (!cameraPermissionAsked)
-							{
-								Permission.RequestUserPermission("android.permission.CAMERA");
-								cameraPermissionAsked = true;
-								timerValue = 2; // Reset the timer to wait for the user's response
-							}
-						}
-						else
-						{
-							permissionsGranted = true;
-							break;
-						}
+                        //if (!Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
+                        //{
+                        //	if (!cameraPermissionAsked)
+                        //	{
+                        //		Permission.RequestUserPermission("android.permission.CAMERA");
+                        //		cameraPermissionAsked = true;
+                        //		timerValue = 2; // Reset the timer to wait for the user's response
+                        //	}
+                        //}
+                        //else
+                        //{
+                        //	permissionsGranted = true;
+                        //	break;
+                        //}
+
+                        permissionsGranted = true;
+                        break;
 					}
-				}
+                }
 			}
 
 			timerValue += Time.deltaTime;
