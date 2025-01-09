@@ -39,7 +39,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
         //    Permission.RequestUserPermission(Permission.FineLocation);
         //}
 
-        // Request Bluetooth permissions (Android 12+)
+// Request Bluetooth permissions (Android 12+)
 #if UNITY_ANDROID && !UNITY_EDITOR
         if (!Permission.HasUserAuthorizedPermission("android.permission.BLUETOOTH_CONNECT"))
         {
@@ -47,6 +47,10 @@ public class PermissionAndServiceChecker : MonoBehaviour
         }
 
         StartCoroutine(CheckPermissionsAndroid());
+#endif
+
+#if UNITY_IOS && !UNITY_EDITOR
+        StartCoroutine(CheckPermissionsIOS());
 #endif
     }
 
@@ -97,38 +101,43 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
 
 
-    //IEnumerator CheckPermissionsiOS()
-    //{
-    //    bool cameraAsked = false;
-    //    bool locationAsked = false;
+    IEnumerator CheckPermissionsIOS()
+{
+    // Check if location services are enabled by the user
+    if (!Input.location.isEnabledByUser)
+    {
+        Debug.Log("Location services are not enabled by the user. Please enable them in settings.");
+        yield break; // Exit the coroutine as we cannot proceed without user enabling location
+    }
+    else
+    {
+        // Start the location service
+        Input.location.Start();
 
-    //    // Check and request Camera Permission
-    //    if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
-    //    {
-    //        if (!cameraAsked)
-    //        {
-    //            Application.RequestUserAuthorization(UserAuthorization.WebCam);
-    //            cameraAsked = true;
-    //        }
-    //    }
+        // Wait for location service to initialize
+        int maxWait = 20; // seconds
+        while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+        {
+            yield return new WaitForSeconds(1);
+            maxWait--;
+        }
 
-    //    yield return new WaitUntil(() => cameraAsked);
+        // Check the status of the location service
+        if (Input.location.status == LocationServiceStatus.Failed)
+        {
+            Debug.Log("Failed to start location service. Check device settings.");
+        }
+        else if (Input.location.status == LocationServiceStatus.Running)
+        {
+            Debug.Log("Location service started successfully.");
+        }
+        else
+        {
+            Debug.Log("Location service initialization timed out.");
+        }
+    }
+}
 
-    //    // Check and request Location Permission
-    //    if (!Application.HasUserAuthorization(UserAuthorization.Location))
-    //    {
-    //        if (!locationAsked)
-    //        {
-    //            Application.RequestUserAuthorization(UserAuthorization.Location);
-    //            locationAsked = true;
-    //        }
-    //    }
-
-    //    yield return new WaitUntil(() => locationAsked);
-
-    //    // Bluetooth permissions must be handled natively
-    //    Debug.Log("For Bluetooth permissions, additional setup is required.");
-    //}
 
 
     public void AskCameraPermission()
@@ -136,6 +145,12 @@ public class PermissionAndServiceChecker : MonoBehaviour
 #if UNITY_ANDROID && !UNITY_EDITOR
         StartCoroutine(AskCameraPermissionAndEnableScannerAndroid());
 #endif
+
+#if UNITY_IOS && !UNITY_EDITOR
+        StartCoroutine(AskCameraPermissionAndEnableScannerIOS());
+#endif
+
+
     }
 
 
@@ -153,6 +168,31 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
             yield return new WaitUntil(() => Permission.HasUserAuthorizedPermission("android.permission.CAMERA"));            
         }
+
+        yield return new WaitForSeconds(0.2f);
+
+        QRCodeScanner.SetActive(true);
+        GetComponent<QR_Codes>().enabled = true;
+    }
+
+
+
+
+    IEnumerator AskCameraPermissionAndEnableScannerIOS()
+    {
+        bool cameraAsked = false;
+
+        // Check and request Camera Permission
+        if (!Application.HasUserAuthorization(UserAuthorization.WebCam))
+        {
+            if (!cameraAsked)
+            {
+                Application.RequestUserAuthorization(UserAuthorization.WebCam);
+                cameraAsked = true;
+            }
+        }
+
+        yield return new WaitUntil(() => Application.HasUserAuthorization(UserAuthorization.WebCam));
 
         yield return new WaitForSeconds(0.2f);
 
