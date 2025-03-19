@@ -102,41 +102,48 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
 
     IEnumerator CheckPermissionsIOS()
-{
-    // Check if location services are enabled by the user
-    if (!Input.location.isEnabledByUser)
     {
-        Debug.Log("Location services are not enabled by the user. Please enable them in settings.");
-        yield break; // Exit the coroutine as we cannot proceed without user enabling location
-    }
-    else
-    {
-        // Start the location service
-        Input.location.Start();
-
-        // Wait for location service to initialize
-        int maxWait = 20; // seconds
-        while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+        // Check if location services are enabled by the user
+        if (!Input.location.isEnabledByUser)
         {
-            yield return new WaitForSeconds(1);
-            maxWait--;
-        }
-
-        // Check the status of the location service
-        if (Input.location.status == LocationServiceStatus.Failed)
-        {
-            Debug.Log("Failed to start location service. Check device settings.");
-        }
-        else if (Input.location.status == LocationServiceStatus.Running)
-        {
-            Debug.Log("Location service started successfully.");
+            Debug.Log("Location services are not enabled by the user. Please enable them in settings.");
+            yield break; // Exit the coroutine as we cannot proceed without user enabling location
         }
         else
         {
-            Debug.Log("Location service initialization timed out.");
+            // Start the location service
+            Input.location.Start();
+
+            // Wait for location service to initialize
+            int maxWait = 20; // seconds
+            while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
+            {
+                yield return new WaitForSeconds(1);
+                maxWait--;
+            }
+
+            // Check the status of the location service
+            if (Input.location.status == LocationServiceStatus.Failed)
+            {
+                Debug.Log("Failed to start location service. Check device settings.");
+            }
+            else if (Input.location.status == LocationServiceStatus.Running)
+            {
+                Debug.Log("Location service started successfully.");
+            }
+            else
+            {
+                Debug.Log("Location service initialization timed out.");
+            }
         }
+
+        // Initialize Bluetooth - TODO: Check if this is needed this was added by cursor
+        BluetoothLEHardwareInterface.Initialize(true, false, () => {
+            Debug.Log("Bluetooth initialized successfully");
+        }, (error) => {
+            Debug.Log("Bluetooth error: " + error);
+        });
     }
-}
 
 
 
@@ -202,7 +209,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
 
 
-
+    // Called from the inspector of flag buttons in StartingPanel
     public void CheckBluetoothAndGPS()
     {
 
@@ -227,6 +234,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
     {
         bool isEnabled = false;
 
+#if UNITY_ANDROID && !UNITY_EDITOR
         try
         {
             using (AndroidJavaClass bluetoothAdapterClass = new AndroidJavaClass("android.bluetooth.BluetoothAdapter"))
@@ -242,6 +250,17 @@ public class PermissionAndServiceChecker : MonoBehaviour
         {
             Debug.LogError("Error checking Bluetooth status: " + ex.Message);
         }
+#elif UNITY_IOS && !UNITY_EDITOR
+        try 
+        {
+            // Use CoreBluetooth state from BluetoothLEHardwareInterface
+            isEnabled = BluetoothLEHardwareInterface.IsBluetoothEnabled();
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error checking iOS Bluetooth status: " + ex.Message);
+        }
+#endif
 
         return isEnabled;
     }
@@ -252,6 +271,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
     {
         bool isEnabled = false;
 
+#if UNITY_ANDROID && !UNITY_EDITOR
         try
         {
             using (AndroidJavaClass locationManagerClass = new AndroidJavaClass("android.location.LocationManager"))
@@ -271,6 +291,33 @@ public class PermissionAndServiceChecker : MonoBehaviour
         {
             Debug.LogError("Error checking GPS status: " + ex.Message);
         }
+#elif UNITY_IOS && !UNITY_EDITOR
+        try
+        {
+            // Check if location services are enabled at the system level
+            if (!UnityEngine.Input.location.isEnabledByUser)
+            {
+                isEnabled = false;
+            }
+            else
+            {
+                // Check if the app has location authorization
+                if (Input.location.status == LocationServiceStatus.Running)
+                {
+                    isEnabled = true;
+                }
+                else
+                {
+                    // Just check if location is enabled by user since we can't directly check authorization status
+                    isEnabled = Input.location.isEnabledByUser;
+                }
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("Error checking iOS GPS status: " + ex.Message);
+        }
+#endif
 
         return isEnabled;
     }
@@ -279,6 +326,7 @@ public class PermissionAndServiceChecker : MonoBehaviour
 
     public void OpenBluetoothSettings()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
         using (var intentClass = new AndroidJavaClass("android.content.Intent"))
         using (var settingsClass = new AndroidJavaClass("android.provider.Settings"))
         using (var activity = new AndroidJavaObject("com.unity3d.player.UnityPlayer"))
@@ -286,10 +334,32 @@ public class PermissionAndServiceChecker : MonoBehaviour
             var intent = new AndroidJavaObject("android.content.Intent", settingsClass.GetStatic<string>("ACTION_BLUETOOTH_SETTINGS"));
             activity.GetStatic<AndroidJavaObject>("currentActivity").Call("startActivity", intent);
         }
+#elif UNITY_IOS && !UNITY_EDITOR
+        try {
+            // First try: Specific Bluetooth settings
+            Application.OpenURL("App-Prefs:root=Bluetooth");
+        }
+        catch {
+            try {
+                // Second try: Main Settings page
+                Application.OpenURL("App-Prefs:root=Settings");
+            }
+            catch {
+                try {
+                    // Last resort: Basic Settings URL
+                    Application.OpenURL("prefs:");
+                }
+                catch (Exception ex) {
+                    Debug.LogError("Failed to open any settings: " + ex.Message);
+                }
+            }
+        }
+#endif
     }
 
     public void OpenGPSSettings()
     {
+#if UNITY_ANDROID && !UNITY_EDITOR
         using (var intentClass = new AndroidJavaClass("android.content.Intent"))
         using (var settingsClass = new AndroidJavaClass("android.provider.Settings"))
         using (var activity = new AndroidJavaObject("com.unity3d.player.UnityPlayer"))
@@ -297,20 +367,43 @@ public class PermissionAndServiceChecker : MonoBehaviour
             var intent = new AndroidJavaObject("android.content.Intent", settingsClass.GetStatic<string>("ACTION_LOCATION_SOURCE_SETTINGS"));
             activity.GetStatic<AndroidJavaObject>("currentActivity").Call("startActivity", intent);
         }
+#elif UNITY_IOS && !UNITY_EDITOR
+        // Open iOS Settings app to Location Services page
+        var url = new System.Uri("App-Prefs:root=Privacy&path=LOCATION");
+        Application.OpenURL(url.AbsoluteUri);
+#endif
     }
 
 
-
+    // Called from the inspector when you click the Open Settings button in DisabledBluetoothGPSPanel
     public void OpenSettings()
     {
         isBluetoothEnabled = IsBluetoothEnabled();
         isGPSEnabled = IsGPSEnabled();
 
-        if (!isBluetoothEnabled)
-            OpenBluetoothSettings();
+        if (!isBluetoothEnabled || !isGPSEnabled)
+        {
+#if UNITY_IOS && !UNITY_EDITOR
+            // Show a dialog using native iOS alert
+            string message = "Please enable ";
+            if (!isBluetoothEnabled && !isGPSEnabled)
+                message += "Bluetooth and Location Services";
+            else if (!isBluetoothEnabled)
+                message += "Bluetooth";
+            else
+                message += "Location Services";
+            message += " in Settings to continue.";
 
-        if (!isGPSEnabled)
-            OpenGPSSettings();
+            // Using Debug.Log for now, I might want to implement a custom UI dialog
+            Debug.Log(message);
+#endif
+
+            if (!isBluetoothEnabled)
+                OpenBluetoothSettings();
+
+            if (!isGPSEnabled)
+                OpenGPSSettings();
+        }
     }
 
 }

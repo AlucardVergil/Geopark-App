@@ -1191,4 +1191,21 @@ public class BluetoothLEHardwareInterface
 			return "0000" + uuid + "-0000-1000-8000-00805F9B34FB";
 		return uuid;
 	}
+
+
+
+	public static bool IsBluetoothEnabled()
+	{
+#if UNITY_IOS && !UNITY_EDITOR
+    // Check CoreBluetooth state through the native plugin
+    return _iOSBluetoothIsEnabled();
+#else
+    return false;
+#endif
+	}
+
+#if UNITY_IOS && !UNITY_EDITOR
+[DllImport("__Internal")]
+private static extern bool _iOSBluetoothIsEnabled();
+#endif
 }

@@ -11,11 +11,16 @@
 const char _messageDelimeter = '~';
 
 extern "C" {
-    
     UnityBluetoothLE *_unityBluetoothLE = nil;
     
+    bool _iOSBluetoothIsEnabled() {
+        if (_unityBluetoothLE != nil && _unityBluetoothLE.centralManager != nil) {
+            return _unityBluetoothLE.centralManager.state == CBManagerStatePoweredOn;
+        }
+        return false;
+    }
+
     void _iOSBluetoothLELogString (NSString *message) {
-        
         NSLog (message);
     }
     
