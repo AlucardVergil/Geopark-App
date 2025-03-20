@@ -299,6 +299,33 @@ extern "C" {
 #endif
 }
 
+@interface UnityBluetoothLE : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate, CBPeripheralManagerDelegate, CLLocationManagerDelegate>
+{
+    CBCentralManager *_centralManager;
+    CBPeripheralManager *_peripheralManager;
+    NSMutableDictionary *_peripherals;
+    NSMutableDictionary *_services;
+    NSMutableDictionary *_characteristics;
+    NSMutableDictionary *_allCharacteristics;
+    NSMutableArray *_backgroundMessages;
+    NSString *_peripheralName;
+    BOOL _isPaused;
+    BOOL _isInitializing;
+    int _mtu;
+    unsigned char *_writeCharacteristicBytes;
+    int _writeCharacteristicLength;
+    int _writeCharacteristicPosition;
+    int _writeCharacteristicBytesToWrite;
+    CBCharacteristicWriteType _writeCharacteristicWithResponse;
+    int _writeCharacteristicRetries;
+    BOOL _rssiOnly;
+    CLLocationManager *_locationManager;
+}
+
+@property (nonatomic, strong) CBCentralManager *centralManager;
+
+@end
+
 @implementation UnityBluetoothLE
 
 @synthesize _peripherals;
