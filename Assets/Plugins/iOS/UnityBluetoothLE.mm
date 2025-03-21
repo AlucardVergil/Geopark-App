@@ -14,18 +14,17 @@ extern "C" {
     UnityBluetoothLE *_unityBluetoothLE = nil;
     
     bool _iOSBluetoothIsEnabled() {
-        if (_unityBluetoothLE != nil && _unityBluetoothLE.centralManager != nil) {
-            return _unityBluetoothLE.centralManager.state == CBManagerStatePoweredOn;
+        if (_unityBluetoothLE != nil && [_unityBluetoothLE centralManager] != nil) {
+            return [_unityBluetoothLE centralManager].state == CBManagerStatePoweredOn;
         }
         return false;
     }
 
     void _iOSBluetoothLELogString (NSString *message) {
-        NSLog (message);
+        NSLog(@"%@", message);
     }
     
     void _iOSBluetoothLELog (char *message) {
-        
         _iOSBluetoothLELogString ([NSString stringWithFormat:@"%s", message]);
     }
     
@@ -299,35 +298,9 @@ extern "C" {
 #endif
 }
 
-@interface UnityBluetoothLE : NSObject <CBCentralManagerDelegate, CBPeripheralDelegate, CBPeripheralManagerDelegate, CLLocationManagerDelegate>
-{
-    CBCentralManager *_centralManager;
-    CBPeripheralManager *_peripheralManager;
-    NSMutableDictionary *_peripherals;
-    NSMutableDictionary *_services;
-    NSMutableDictionary *_characteristics;
-    NSMutableDictionary *_allCharacteristics;
-    NSMutableArray *_backgroundMessages;
-    NSString *_peripheralName;
-    BOOL _isPaused;
-    BOOL _isInitializing;
-    int _mtu;
-    unsigned char *_writeCharacteristicBytes;
-    int _writeCharacteristicLength;
-    int _writeCharacteristicPosition;
-    int _writeCharacteristicBytesToWrite;
-    CBCharacteristicWriteType _writeCharacteristicWithResponse;
-    int _writeCharacteristicRetries;
-    BOOL _rssiOnly;
-    CLLocationManager *_locationManager;
-}
-
-@property (nonatomic, strong) CBCentralManager *centralManager;
-
-@end
-
 @implementation UnityBluetoothLE
 
+@synthesize centralManager = _centralManager;
 @synthesize _peripherals;
 @synthesize _rssiOnly;
 
@@ -555,7 +528,7 @@ extern "C" {
 {
     _mtu = mtu;
 
-    NSString *message = [NSString stringWithFormat:@"MtuChanged~%@~%d", name, _mtu];
+    NSString *message = [NSString stringWithFormat:@"MtuChanged~%@~%ld", name, (long)_mtu];
     UnitySendMessage ("BluetoothLEReceiver", "OnBluetoothMessage", [message UTF8String]);
 }
 
@@ -794,7 +767,7 @@ extern "C" {
 {
     switch (central.state)
     {
-        case CBCentralManagerStateUnsupported:
+        case CBManagerStateUnsupported:
         {
             NSLog(@"Central State: Unsupported");
             
@@ -802,7 +775,7 @@ extern "C" {
             UnitySendMessage ("BluetoothLEReceiver", "OnBluetoothMessage", [message UTF8String] );
         } break;
             
-        case CBCentralManagerStateUnauthorized:
+        case CBManagerStateUnauthorized:
         {
             NSLog(@"Central State: Unauthorized");
             
@@ -810,7 +783,7 @@ extern "C" {
             UnitySendMessage ("BluetoothLEReceiver", "OnBluetoothMessage", [message UTF8String] );
         } break;
             
-        case CBCentralManagerStatePoweredOff:
+        case CBManagerStatePoweredOff:
         {
             NSLog(@"Central State: Powered Off");
             
@@ -818,7 +791,7 @@ extern "C" {
             UnitySendMessage ("BluetoothLEReceiver", "OnBluetoothMessage", [message UTF8String] );
         } break;
             
-        case CBCentralManagerStatePoweredOn:
+        case CBManagerStatePoweredOn:
         {
             NSLog(@"Central State: Powered On");
             if (_isInitializing)
@@ -826,7 +799,7 @@ extern "C" {
             _isInitializing = FALSE;
         } break;
             
-        case CBCentralManagerStateUnknown:
+        case CBManagerStateUnknown:
         {
             NSLog(@"Central State: Unknown");
             
@@ -837,7 +810,6 @@ extern "C" {
         default:
         {
         }
-            
     }
 }
 
