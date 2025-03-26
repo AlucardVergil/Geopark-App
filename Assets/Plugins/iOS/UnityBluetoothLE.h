@@ -51,6 +51,7 @@
     int _writeCharacteristicRetries;
 }
 
+@property (nonatomic, strong) CBCentralManager *centralManager;
 @property (atomic, strong) NSMutableDictionary *_peripherals;
 @property (atomic) BOOL _rssiOnly;
 
@@ -61,6 +62,7 @@
 - (void)retrieveListOfPeripheralsWithServices:(NSArray *)serviceUUIDs;
 - (void)connectToPeripheral:(NSString *)name;
 - (void)disconnectPeripheral:(NSString *)name;
+- (void)disconnectAll;
 - (CBCharacteristic *)getCharacteristic:(NSString *)name service:(NSString *)serviceString characteristic:(NSString *)characteristicString;
 - (void)readCharacteristic:(NSString *)name service:(NSString *)serviceString characteristic:(NSString *)characteristicString;
 - (void)writeCharacteristic:(NSString *)name service:(NSString *)serviceString characteristic:(NSString *)characteristicString data:(NSData *)data withResponse:(BOOL)withResponse;
