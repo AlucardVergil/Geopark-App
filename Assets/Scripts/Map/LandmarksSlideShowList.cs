@@ -39,7 +39,7 @@ public class LandmarksSlideShowList : MonoBehaviour
 
 
         // Set the hidden and visible positions
-        hiddenPosition = new Vector2(1082f, -161.01f);
+        hiddenPosition = new Vector2(Screen.width, -161.01f);
         visiblePosition = new Vector2(-10f, -161.01f);
 
         // Start the panel in the hidden position
