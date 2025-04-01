@@ -25,22 +25,21 @@ public class HorizontalSlideshow : MonoBehaviour, IEndDragHandler
         for (int i = 0; i < childCount; i++)
         {
             panelPositions[i] = (float)i / (childCount - 1);
-            Debug.Log($"Panel Positions: {panelPositions[i]}\n");
         }
 
         // Add listeners to buttons
         leftButton.onClick.AddListener(ScrollLeft);
-        rightButton.onClick.AddListener(ScrollRight);   
-        
+        rightButton.onClick.AddListener(ScrollRight);
+
         if (currentPanelIndex == 0)
             leftButton.gameObject.SetActive(false);
 
         // Adjust the layout spacing based on screen width.
-        // The 0.2816901408450704f is calculated with: 200 which is the original spacing i gave for 1080px width (Screen width - (2 * 185 which is the padding left and right)) to calculate the equivalent for the different screen width
-        content.GetComponent<HorizontalLayoutGroup>().spacing = 250;// 0.2816901408450704f * (Screen.width - (2 * 185));
+        // This is calculated based on the width of the layout group - 700(which is the width of each landmark prefab) and then divided by 2 to get the padding amount for both sides.
+        int paddingAmount = Mathf.RoundToInt((scrollRect.GetComponent<RectTransform>().rect.width - 700) / 2); 
 
-        Debug.Log($"Spacing: {0.2816901408450704f * Screen.width}, Width: {Screen.width}, Layout Width: {scrollRect.GetComponent<RectTransform>().rect.width}");
-
+        content.GetComponent<HorizontalLayoutGroup>().padding.left = paddingAmount;
+        content.GetComponent<HorizontalLayoutGroup>().padding.right = paddingAmount;
     }
 
 
