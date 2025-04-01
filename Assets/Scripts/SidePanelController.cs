@@ -20,7 +20,7 @@ public class SidePanelController : MonoBehaviour
     void Start()
     {
         // Set the hidden and visible positions
-        hiddenPosition = new Vector2(-Screen.width, 0);
+        hiddenPosition = new Vector2(-Screen.width - 100, 0);
         visiblePosition = new Vector2(0f, 0);
 
         // Start the panel in the hidden position
